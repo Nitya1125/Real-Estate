@@ -73,7 +73,14 @@ app.get("/properties", async (req,res) =>{
     .sort(sortOption)
     .skip(skip)
     .limit(Number(limit));
-    res.json(data);
+
+    const total = await
+    Property.countDocuments(filter);
+    res.json({
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        data});
 });
 
 
