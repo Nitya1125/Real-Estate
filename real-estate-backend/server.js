@@ -1,4 +1,5 @@
 const express = require("express")
+const axios = require("axios")
 const Property = require("./models/Property");
 const connectDB = require("./config/db");
 
@@ -87,6 +88,20 @@ app.get("/properties", async (req,res) =>{
 app.post("/properties" , async (req,res) => {
     const newProperty = await Property.create(req.body);
     res.json(newProperty);
+})
+
+app.post("/predict-price" ,async (req,res) => {
+    try{
+        const response = await axios.post("http://127.0.0.1:5001/predict",{
+            area,
+            bathrooms,
+            bedrooms
+        });
+        res.json(response.data);
+    }catch(err){
+        console.error(err);
+        res.status(500).json({message: "Error in prediction"});
+    }
 })
 
 const PORT = 5000;
