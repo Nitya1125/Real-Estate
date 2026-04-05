@@ -1,70 +1,82 @@
-import React from 'react'
-import house from "../assets/house.jpeg"
-import { CheckCircle } from 'lucide-react'
+import { motion } from "framer-motion";
+import house from "../assets/house.jpeg";
+import { CheckCircle } from "lucide-react";
 
 const About = () => {
   return (
-         <section className="w-full py-28 px-6 md:px-20 bg-gradient-to-b from-white to-gray-100">
-      
-      <div className="max-w-[1500px] mx-auto grid md:grid-cols-2 gap-16 items-center">
+    <section className="max-w-[1500px] mx-auto px-6 md:px-10 py-24">
 
-        {/* LEFT */}
-        <div>
-          <p className="text-sm text-gray-500 mb-3 uppercase tracking-widest">
-            AI Powered Platform
-          </p>
+      <div className="grid md:grid-cols-2 gap-16 items-center">
 
-          <h2 className="text-5xl font-bold text-gray-900 leading-tight mb-6">
-            Smart Decisions <br />
-            With AI Insights
-          </h2>
-
-          <p className="text-gray-600 mb-8 text-lg">
-            Predict property prices using advanced machine learning models.
-            Make smarter investments with real-time insights and analytics.
-          </p>
-
-          {/* FEATURES */}
-          <div className="space-y-4 mb-8">
-            {[
-              "Accurate price prediction",
-              "Live market trends",
-              "Data-driven insights",
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <CheckCircle className="text-black" size={20} />
-                <p className="text-gray-700">{item}</p>
-              </div>
-            ))}
-          </div>
-
-          <button className="bg-black text-white px-7 py-3 rounded-full hover:bg-gray-800 transition">
-            Explore More →
-          </button>
-        </div>
-
-        {/* RIGHT */}
-        <div className="relative">
+        <motion.div
+          initial={{ opacity: 0, x: -80 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="relative"
+        >
           <img
             src={house}
-            alt="house"
-            className="rounded-3xl shadow-2xl"
+            className="w-full h-[450px] object-cover rounded-3xl shadow-lg"
           />
+          <div className="absolute -inset-4 bg-gradient-to-r from-gray-200 to-gray-100 blur-2xl opacity-40 -z-10"></div>
+        </motion.div>
 
-          {/* Glow Effect */}
-          <div className="absolute -inset-2 bg-gradient-to-r from-gray-200 to-gray-300 blur-2xl opacity-40 -z-10"></div>
+        <motion.div
+          initial={{ opacity: 0, x: 80 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+        >
 
-          {/* Floating Card */}
-          <div className="absolute bottom-6 right-6 bg-white shadow-xl px-6 py-4 rounded-xl">
-            <p className="text-sm text-gray-500">AI Prediction</p>
-            <h4 className="font-bold text-lg">₹1.25 Cr</h4>
+          <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+            AI That Helps You <br /> Buy Better Homes
+          </h2>
+
+          <p className="mt-5 text-gray-500 leading-relaxed">
+            Our platform uses machine learning to analyze property data and 
+            predict accurate prices based on location, size, and features.
+          </p>
+
+          <div className="mt-6 space-y-4">
+
+            {[
+              "Accurate AI predictions",
+              "Real-time market insights",
+              "Smart decision making",
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.2 }}
+                viewport={{ once: true }}
+                className="flex items-center gap-3 text-gray-700"
+              >
+                <CheckCircle size={20} className="text-black" />
+                {item}
+              </motion.div>
+            ))}
+
           </div>
-        </div>
+
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.05 }}
+            className="mt-8 bg-black text-white px-7 py-3 rounded-full hover:bg-gray-800 transition"
+          >
+            Learn More
+          </motion.button>
+
+        </motion.div>
 
       </div>
+
     </section>
+  );
+};
 
-  )
-}
-
-export default About
+export default About;

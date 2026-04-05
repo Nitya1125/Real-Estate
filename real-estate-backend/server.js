@@ -2,10 +2,14 @@ const express = require("express")
 const axios = require("axios")
 const Property = require("./models/Property");
 const connectDB = require("./config/db");
+const User  = require("./models/User")
+const bcrypt = require("bcrypt")
+const cors = require("cors")
 
 connectDB();
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 const addData = async ()=>{
     await Property.create({
@@ -19,7 +23,133 @@ const addData = async ()=>{
     console.log("Data Insert")
 }
 
-app.get("/properties", async (req,res) =>{
+app.post("/api/auth/signup", async (req,res) =>{
+    console.log(req.body)
+    const {name,email,password} = req.body;
+
+    try{
+        const existingUser = await User.findOne({email});
+        if (existingUser){
+            return res.json({
+                message:"User Already Exists"
+            });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        const user  =  await User.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+        console.log("User Saved:", user)
+        res.json({
+            success: true,
+            data: user
+        })
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            error : "Server error"
+        })
+    }
+})
+
+app.post("/api/auth/login", async(req,res) =>{
+    const {email, password} = req.body;
+    try{
+        const user = await User.findOne({email})
+        if (!user){
+            return res.json({
+                message: "User Not Found"
+            })
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password)
+
+        if(!isMatch){
+            return res.json({
+                message: "Invalid Credential"
+            })
+        }
+        res.json({
+            success: true,
+            user
+        })
+
+    }catch(error){
+        res.status(500).json({
+            error: "Server error"
+        })
+    }
+
+})
+
+app.post("/api/admin/login", (req,res) => {
+    console.log(req.body);
+    const {email,password} = req.body;
+
+    if(email === "admin@gmail.com" && password==="admin@123"){
+        return res.json({
+            success : true,
+            message: "Login Successfully"
+        })
+    }
+        return res.status(401).json({
+            success : false,
+            message: "invalid Credential"
+        })
+    
+})
+const contact= []
+app.post("/api/contact" , (req,res) =>{
+    const {name , email, message} = req.body;
+
+    if (!name || !email || !message){
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required"
+        })
+    }
+
+    const newContact = {
+        id: Date.now(),
+        name,
+        email,
+        message
+    };
+    contact.push(newContact);
+
+    res.json({
+        success: true,
+        message:"Message received successfully",
+        data : newContact
+    })
+})
+
+app.post("/api/properties" , (req,res) =>{
+    const newProperty = req.body;
+
+    properties.push(newProperty);
+    res.json({message: "Property Added successfully",
+        data: newProperty
+    })
+})
+
+app.post("/api/predict-price", (req,res) =>{
+    console.log(req.body);
+    const  {area, bedrooms,bathrooms} = req.body;
+    
+
+    const price = Number(area) *3000+ Number(bedrooms)*50000 + Number(bathrooms)* 30000;
+
+    console.log("PRICE", price)
+
+    res.json({
+        predictedPrice : price || 0
+    });
+});
+
+app.get("/api/properties", async (req,res) =>{
     
     const{location,district,property_type,bedrooms,bathrooms,minPrice, maxPrice, minArea} = req.query;
 

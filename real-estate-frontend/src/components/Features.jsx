@@ -70,7 +70,7 @@ const Features = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true }}
-        className="max-w-6xl mx-auto grid sm:grid-cols-2 md:grid-cols-4 gap-8"
+        className="max-w-[1600px] mx-auto grid sm:grid-cols-2 md:grid-cols-4 gap-8"
       >
         {features.map((item, index) => (
           <motion.div

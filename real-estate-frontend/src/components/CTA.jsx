@@ -1,36 +1,52 @@
-import React from 'react'
+import { motion } from "framer-motion";
 
 const CTA = () => {
   return (
-     <section className="w-full py-24 px-6 md:px-20 bg-white">
-      
-      <div className="max-w-[1500px] mx-auto bg-gradient-to-r from-black to-gray-800 text-white rounded-3xl px-10 py-16 text-center shadow-xl">
+    <motion.section
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      className="max-w-[1600px] mx-auto px-6 md:px-10 py-20"
+    >
+      <div className="bg-gradient-to-r from-gray-900 to-black text-white rounded-3xl p-12 md:p-16 text-center shadow-xl relative overflow-hidden">
 
-        <h2 className="text-4xl md:text-5xl font-bold mb-6">
-          Find Your Dream Home Today
+        {/* Glow Background */}
+        <div className="absolute -top-10 -left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+
+        {/* TEXT */}
+        <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+          Find Your Dream Home with AI
         </h2>
 
-        <p className="text-gray-300 mb-10 text-lg">
-          Discover smart real estate solutions powered by AI.  
-          Start exploring properties that match your lifestyle.
+        <p className="mt-4 text-gray-300 max-w-xl mx-auto">
+          Experience smarter property search with AI-powered insights,
+          accurate pricing, and personalized recommendations.
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          
-          <button className="bg-white text-black px-7 py-3 rounded-full font-medium hover:bg-gray-200 transition">
-            Get Started
-          </button>
+        {/* BUTTONS */}
+        <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center">
 
-          <button className="border border-white px-7 py-3 rounded-full hover:bg-white hover:text-black transition">
-            Browse Properties
-          </button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            className="bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
+          >
+            Get Started
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            className="border border-white px-6 py-3 rounded-full hover:bg-white hover:text-black transition"
+          >
+            Contact Us
+          </motion.button>
 
         </div>
 
       </div>
+    </motion.section>
+  );
+};
 
-    </section>
-  )
-}
-
-export default CTA
+export default CTA;
