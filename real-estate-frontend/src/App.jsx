@@ -8,6 +8,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App(){
   const [loading, setLoading] = useState(true);
@@ -31,6 +32,7 @@ function App(){
       <Route path ="/contact" element ={<ContactPage/>}/>
       <Route path="/login" element = {<Login />}/>
       <Route path ="/signup" element = {<Signup />} />
+      <Route path="/admin" element ={<AdminDashboard/>}/>
     </Routes>
     </BrowserRouter>
   )

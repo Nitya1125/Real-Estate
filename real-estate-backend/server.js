@@ -1,11 +1,17 @@
 const express = require("express")
+const jwt = require("jsonwebtoken")
 const axios = require("axios")
 const Property = require("./models/Property");
 const connectDB = require("./config/db");
+const propertyRoutes = require("./routes/property")
 const User  = require("./models/User")
+const {OAuth2Client} = require("google-auth-library")
 const bcrypt = require("bcrypt")
 const cors = require("cors")
 
+const client = new OAuth2Client("872873640503-udo11033r9u2rgtoabej6o3l6kimfhjf.apps.googleusercontent.com")
+
+const authMiddleware = require("./middleware/auth")
 connectDB();
 const app = express();
 app.use(express.json());
@@ -22,6 +28,57 @@ const addData = async ()=>{
     });
     console.log("Data Insert")
 }
+
+app.use("/api/property", propertyRoutes);
+
+
+app.post("/api/auth/google", async(req,res)=>{
+    try{
+        const {token} = req.body;
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: "872873640503-udo11033r9u2rgtoabej6o3l6kimfhjf.apps.googleusercontent.com"
+        })
+
+        const payload = ticket.getPayload();
+        const email = payload.email;
+        const name = payload.name;
+
+        let user = await User.findOne({email});
+
+        if(!user){
+            user = await User.create({
+                name,
+                email,
+                password: "google-user" //dummy
+            });
+        }
+
+        const jwtToken = jwt.sign(
+            {id: user._id},
+            "secretKey",
+            {expiresIn: "7d"}
+        );
+
+       return res.json({
+            success: true,
+            token: jwtToken,
+            user
+        })
+    }catch(err){
+        res.status(500).json({
+            message: "Google auth failed"
+        })
+    }
+})
+
+app.get("/api/protected", authMiddleware,  (req,res) => {
+    res.json({
+        message: "You are authorized",
+        user : req.user
+    })
+})
 
 app.post("/api/auth/signup", async (req,res) =>{
     console.log(req.body)
@@ -54,6 +111,8 @@ app.post("/api/auth/signup", async (req,res) =>{
     }
 })
 
+
+
 app.post("/api/auth/login", async(req,res) =>{
     const {email, password} = req.body;
     try{
@@ -71,8 +130,15 @@ app.post("/api/auth/login", async(req,res) =>{
                 message: "Invalid Credential"
             })
         }
+
+        const token = jwt.sign(
+            {id: user._id},
+            "secretkey",
+            {expiresIn: "7d"}
+        );
         res.json({
             success: true,
+            token,
             user
         })
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom"
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -8,6 +9,8 @@ const Signup = () => {
         email: "",
         password: ""
     });
+
+    const navigate = useNavigate();
 
     const handleChange = (e) =>{
         setFormData({
@@ -21,8 +24,14 @@ const Signup = () => {
 
         try{
             const res = await axios.post("http://localhost:5000/api/auth/signup", formData);
-            console.log(res.data);
-            alert("Signup Successful")
+
+            if (res.data.message  === "User Already Exists"){
+              alert("User Already  Exists")
+              return;
+            }else{
+              alert("Signup Successful");
+            }
+          navigate("/")
         }catch(error){
             console.log(error)
         }
@@ -41,6 +50,7 @@ const Signup = () => {
           type="text"
           name = "name"
           onChange={handleChange}
+          value={formData.name}
           placeholder="Name"
           className="w-full mb-4 p-3 border rounded-lg"
         />
@@ -49,6 +59,7 @@ const Signup = () => {
           type="email"
           name = "email"
           onChange={handleChange}
+          value={formData.email}
           placeholder="Email"
           className="w-full mb-4 p-3 border rounded-lg"
         />
@@ -57,6 +68,7 @@ const Signup = () => {
           type="password"
           name= "password"
           onChange={handleChange}
+          value={formData.password}
           placeholder="Password"
           className="w-full mb-4 p-3 border rounded-lg"
         />
