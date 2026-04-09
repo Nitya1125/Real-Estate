@@ -1,21 +1,17 @@
 const express = require('express')
 const router = express.Router();
-const Property = require('../models/Property');
+const {
+  addProperty,
+  getAllProperties,
+  SearchFilter,
+  editProperty,
+  handleDeleteByID,
+} = require('../controllers/propertyController');
 
-router.post("/add", async(req,res)=>{
-    try{
-        const property = await Property.create(req.body);
-
-        res.json({
-            success: true,
-            property
-        })
-
-    }catch(err){
-        res.status(500).json({
-            message: "Error adding Property"
-        })
-    }
-})
+router.post("/add", addProperty); 
+router.get("/", getAllProperties);
+router.get("/search", SearchFilter);
+router.put("/edit/:id", editProperty);
+router.delete("/delete/:id", handleDeleteByID);
 
 module.exports = router;
