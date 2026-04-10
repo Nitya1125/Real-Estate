@@ -1,8 +1,7 @@
-import Navbar from "./components/Navbar";
 import { useEffect,useState } from "react";
 import Splashscreen from "./components/Splashscreen"
 import Dashboard from "./pages/Dashboard";
-import { BrowserRouter ,Routes,Route } from "react-router-dom";
+import { BrowserRouter ,Routes,Route, Navigate } from "react-router-dom";
 import PropertiesPage from "./pages/PropertiesPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
@@ -32,7 +31,7 @@ function App(){
       <Route path ="/contact" element ={<ContactPage/>}/>
       <Route path="/login" element = {<Login />}/>
       <Route path ="/signup" element = {<Signup />} />
-      <Route path="/admin" element ={<AdminDashboard/>}/>
+      <Route path="/admin" element ={localStorage.getItem("token") ? <AdminDashboard/>: <Navigate to="/login" />}/>
     </Routes>
     </BrowserRouter>
   )

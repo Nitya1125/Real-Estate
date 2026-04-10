@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {OAuth2Client} = require("google-auth-library");
+const {OAuth2Client, JWT} = require("google-auth-library");
+require("dotenv").config();
 
 const client = new OAuth2Client("872873640503-udo11033r9u2rgtoabej6o3l6kimfhjf.apps.googleusercontent.com");
 
@@ -55,13 +56,13 @@ async function handleUserSignup(req, res) {
     
             const token = jwt.sign(
                 {id: user._id},
-                "secretKey",
+                process.env.JWT_SECRET,
                 {expiresIn: "7d"}
             );
+            res.cookie('token',token,{httpOnly: true, secure: false, sameSite: "lax"});
             res.json({
                 success: true,
-                token,
-                user
+                message: "Login Successfully",
             })
     
         }catch(error){
@@ -96,7 +97,7 @@ async function handleGoogleLogin(req,res) {
 
         const jwtToken = jwt.sign(
             {id: user._id},
-            "secretKey",
+            process.env.JWT_SECRET,
             {expiresIn: "7d"}
         );
 

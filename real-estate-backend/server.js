@@ -6,12 +6,16 @@ const authRoutes = require("./routes/authRoutes")
 const contactRouter = require("./routes/contactRoutes")
 const userRoutes = require("./routes/userRoutes")
 const cors = require("cors")
+const cookieParser = require("cookie-parser");
 
-const authMiddleware = require("./middleware/auth")
+const authMiddleware = require("./middleware/auth");
 connectDB();
 const app = express();
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+    credentials: true,
+    origin: "http://localhost:5173"}))
+app.use(cookieParser());
 
 app.use("/api/properties", propertyRoutes);
 

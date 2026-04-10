@@ -18,8 +18,9 @@ const Login = () => {
   };
   const handleLogin = async() =>{
     try{
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData);
-
+      const res = await axios.post("http://localhost:5000/api/auth/login", formData,{
+        withCredentials: true
+      });
       if(res.data.message === "User Not Found"){
         alert("User Not Found");
       return
@@ -29,10 +30,15 @@ const Login = () => {
         alert("Wrong  Password");
         return;
       }
+      if(res.data.message === "Login Successfully"){  
+        console.log("success block Running")
       alert("Login Successful");
-      localStorage.setItem("token", res.data.token);
-
-      navigate("/");
+      if(formData.email === "admin@gmail.com"){
+        navigate("/admin")
+      }else{
+        navigate("/")
+      }
+    };
   }catch(error) {
     console.log(error);
     alert("Login error")
