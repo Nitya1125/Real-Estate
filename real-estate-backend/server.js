@@ -17,6 +17,8 @@ app.use(cors({
     origin: "http://localhost:5173"}))
 app.use(cookieParser());
 
+app.use("/uploads", express.static("uploads"));
+
 app.use("/api/properties", propertyRoutes);
 
 

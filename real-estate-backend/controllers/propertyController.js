@@ -2,7 +2,8 @@ const Property = require("../models/Property");
 
 const addProperty = async (req, res) => {
   try {
-    const property = await Property.create(req.body);
+    const image = req.file ? req.file.filename : "";
+    const property = await Property.create({ ...req.body, image: image });
     res.json({
       success: true,
       property,
@@ -92,11 +93,21 @@ const SearchFilter = async (req, res) => {
   });
 };
 const editProperty = async (req, res) => {
-  const { id } = req.params;
-  const property = await Property.findByIdAndUpdate(id, req.body, {
-    new: true,
-  });
-  res.json(property);
+  try{
+    const image = req.file ? req.file.filename: null;
+    const updateData = { ...req.body };
+    if (image) {
+      updateData.image = image;
+    }
+    const update = await Property.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
+    res.json(update);
+  }catch(err){
+    res.status(500).json({
+      message: "Error editing Property",
+    });
+  }
 };
 
 const handleDeleteByID = async (req, res) => {

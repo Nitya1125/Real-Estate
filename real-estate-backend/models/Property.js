@@ -8,7 +8,8 @@ const propertySchema = new mongoose.Schema({
     location: String,
     area: Number,
     bedrooms: Number,
-    bathrooms: Number
+    bathrooms: Number,
+    image: String,
 }, {timestamps:true})
 
 const Property = mongoose.model("Property", propertySchema);

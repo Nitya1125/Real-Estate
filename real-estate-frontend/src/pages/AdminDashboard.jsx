@@ -1,147 +1,329 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Grid,
+  Tabs,
+  Tab,
+  TextField,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
 const AdminDashboard = () => {
+  const token = localStorage.getItem("token");
 
-    const navigate = useNavigate();
-
+  const [tab, setTab] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [image, setImage] = useState(null);
+  const [editingProperty, setEditingProperty] = useState(null);
 
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
+  const [form, setForm] = useState({
+    title: "",
+    location: "",
+    area: "",
+    bedrooms: "",
+    bathrooms: "",
+    price: "",
+    type: "Apartment",
+  });
+
+  // ================= FETCH =================
+  const fetchAll = async () => {
+    try {
+      const usersRes = await axios.get(
+        "http://localhost:5000/api/users",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const propRes = await axios.get(
+        "http://localhost:5000/api/properties"
+      );
+
+      setUsers(usersRes.data.users || usersRes.data);
+      setProperties(propRes.data.properties || propRes.data);
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  const handleLogout = () => {
-    navigate("/login")
-  }
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  // ================= HANDLE CHANGE =================
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+    let updated = { ...form, [name]: value };
+
+    if (updated.bedrooms && updated.location) {
+      updated.title = `${updated.bedrooms}BHK ${updated.type} in ${updated.location}`;
+    }
+
+    setForm(updated);
+
+    if (updated.area && updated.bedrooms && updated.bathrooms) {
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/predict-price",
+          {
+            area: Number(updated.area),
+            bedrooms: Number(updated.bedrooms),
+            bathrooms: Number(updated.bathrooms),
+          }
+        );
+
+        setForm((prev) => ({
+          ...prev,
+          price: res.data.price,
+        }));
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  const handleImage = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  // ================= ADD / EDIT =================
+  const handleSubmit = async () => {
+    try {
+      const data = new FormData();
+      Object.keys(form).forEach((key) => {
+        data.append(key, form[key]);
+      });
+
+      if (image) data.append("image", image);
+
+      if (editingProperty) {
+        await axios.put(
+          `http://localhost:5000/api/properties/edit/${editingProperty._id}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        await axios.post(
+          "http://localhost:5000/api/properties",
+          data,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+
+      setForm({
+        title: "",
+        location: "",
+        area: "",
+        bedrooms: "",
+        bathrooms: "",
+        price: "",
+        type: "Apartment",
+      });
+
+      setImage(null);
+      setEditingProperty(null);
+      setTab(0);
+
+      fetchAll();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // ================= DELETE =================
+  const deleteProperty = async (id) => {
+    await axios.delete(
+      `http://localhost:5000/api/properties/delete/${id}`
+    );
+    fetchAll();
+  };
+
+  const editProperty = (p) => {
+    setEditingProperty(p);
+    setForm(p);
+    setTab(1);
+  };
+
+  const deleteUser = async (id) => {
+    await axios.delete(
+      `http://localhost:5000/api/users/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    fetchAll();
+  };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <Box p={4}>
 
-      <motion.div
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className="w-64 bg-black text-white p-6"
-      >
-        <h2 className="text-2xl font-bold mb-10">Admin Panel</h2>
+      <Typography variant="h4" mb={3}>
+        Admin Dashboard
+      </Typography>
 
-        <ul className="space-y-6 text-gray-300">
-          <li className="hover:text-white cursor-pointer">Dashboard</li>
-          <li className="hover:text-white cursor-pointer">Add Property</li>
-          <li className="hover:text-white cursor-pointer">All Properties</li>
-          <li className="hover:text-white cursor-pointer">Users</li>
-        </ul>
-      </motion.div>
+      {/* TABS */}
+      <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={{ mb: 3 }}>
+        <Tab label="Properties" />
+        <Tab label="Add Property" />
+        <Tab label="Users" />
+      </Tabs>
 
-      <div className="flex-1 p-8 overflow-y-auto">
+      {/* ================= PROPERTIES ================= */}
+      {tab === 0 && (
+        <Grid container spacing={3}>
+          {properties.map((p) => (
+            <Grid item xs={12} sm={6} md={4} key={p._id}>
+              <Card sx={{ borderRadius: 3, boxShadow: 4 }}>
+                <CardMedia
+                  component="img"
+                  height="180"
+                  image={
+                    p.image
+                      ? `http://localhost:5000/uploads/${p.image}`
+                      : "https://via.placeholder.com/400"
+                  }
+                />
 
-        <motion.div
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="flex justify-between items-center mb-8"
-        >
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+                <CardContent>
+                  <Typography variant="h6">{p.title}</Typography>
 
-          <button onClick={handleLogout} className="bg-black text-white px-5 py-2 rounded-lg hover:scale-105 transition">
-            Logout
-          </button>
-        </motion.div>
+                  <Typography color="green" fontWeight="bold">
+                    ₹{p.price?.toLocaleString("en-IN")}
+                  </Typography>
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
+                  <Box mt={2} display="flex" gap={1}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() => editProperty(p)}
+                    >
+                      Edit
+                    </Button>
 
-          {[ "Properties", "Users", "Revenue" ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.2 }}
-              whileHover={{ scale: 1.05 }}
-              className="bg-white p-6 rounded-xl shadow cursor-pointer"
-            >
-              <h3 className="text-gray-500">Total {item}</h3>
-              <p className="text-2xl font-bold mt-2">
-                {item === "Revenue" ? "₹2,50,000" : "120"}
-              </p>
-            </motion.div>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      fullWidth
+                      onClick={() => deleteProperty(p._id)}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
           ))}
+        </Grid>
+      )}
 
-        </div>
+      {/* ================= ADD PROPERTY ================= */}
+      {tab === 1 && (
+        <Paper sx={{ p: 3, maxWidth: 700 }}>
+          <Typography variant="h6" mb={2}>
+            {editingProperty ? "Edit Property" : "Add Property"}
+          </Typography>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white p-8 rounded-xl shadow max-w-3xl"
-        >
-          <h2 className="text-xl font-bold mb-6">Add Property</h2>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField fullWidth name="location" label="Location" value={form.location} onChange={handleChange}/>
+            </Grid>
 
-          <div className="grid grid-cols-2 gap-4">
+            <Grid item xs={6}>
+              <TextField fullWidth name="area" label="Area" value={form.area} onChange={handleChange}/>
+            </Grid>
 
-            <input className="p-3 border rounded-lg" placeholder="Title" />
-            <input className="p-3 border rounded-lg" placeholder="Location" />
+            <Grid item xs={6}>
+              <TextField fullWidth name="bedrooms" label="Bedrooms" value={form.bedrooms} onChange={handleChange}/>
+            </Grid>
 
-            <input className="p-3 border rounded-lg" placeholder="Price" />
-            <input className="p-3 border rounded-lg" placeholder="Area (sqft)" />
+            <Grid item xs={6}>
+              <TextField fullWidth name="bathrooms" label="Bathrooms" value={form.bathrooms} onChange={handleChange}/>
+            </Grid>
 
-            <input className="p-3 border rounded-lg" placeholder="Bedrooms" />
-            <input className="p-3 border rounded-lg" placeholder="Bathrooms" />
+            <Grid item xs={6}>
+              <TextField fullWidth value={form.title} label="Title" disabled />
+            </Grid>
 
-            <select className="p-3 border rounded-lg">
-              <option>Type</option>
-              <option>Villa</option>
-              <option>Apartment</option>
-              <option>House</option>
-            </select>
+            <Grid item xs={6}>
+              <TextField fullWidth value={form.price} label="Price" disabled />
+            </Grid>
 
-          </div>
+            <Grid item xs={6}>
+              <TextField select fullWidth name="type" value={form.type} onChange={handleChange}>
+                <MenuItem value="Apartment">Apartment</MenuItem>
+                <MenuItem value="Villa">Villa</MenuItem>
+              </TextField>
+            </Grid>
 
-          <div className="mt-6">
+            <Grid item xs={6}>
+              <input type="file" onChange={handleImage} />
+            </Grid>
+          </Grid>
 
-            <label className="block mb-2 font-semibold">Upload Image</label>
-
-            <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center cursor-pointer hover:bg-gray-50 transition">
-
-              <input
-                type="file"
-                onChange={handleImage}
-                className="hidden"
-                id="fileUpload"
-              />
-
-              <label htmlFor="fileUpload" className="cursor-pointer">
-
-                {!image ? (
-                  <p className="text-gray-500">
-                    Drag & Drop or Click to Upload
-                  </p>
-                ) : (
-                  <img
-                    src={image}
-                    alt="preview"
-                    className="w-full h-40 object-cover rounded-lg"
-                  />
-                )}
-
-              </label>
-
-            </div>
-
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            className="mt-6 bg-black text-white px-6 py-3 rounded-lg w-full"
+          <Button
+            variant="contained"
+            sx={{ mt: 3 }}
+            onClick={handleSubmit}
           >
-            Add Property
-          </motion.button>
+            {editingProperty ? "Update Property" : "Add Property"}
+          </Button>
+        </Paper>
+      )}
 
-        </motion.div>
+      {/* ================= USERS ================= */}
+      {tab === 2 && (
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" mb={2}>
+            Users
+          </Typography>
 
-      </div>
-    </div>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {users.map((u) => (
+                <TableRow key={u._id}>
+                  <TableCell>{u.name}</TableCell>
+                  <TableCell>{u.email}</TableCell>
+                  <TableCell>
+                    <Button
+                      color="error"
+                      variant="contained"
+                      onClick={() => deleteUser(u._id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
+      )}
+    </Box>
   );
 };
 
