@@ -1,5 +1,23 @@
 const Property = require("../models/Property");
 
+const PropertiesDetails = async (req,res) => {
+  try{
+    const {id} = req.params;
+    const property = await Property.findById(id);
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+    res.json({
+      success: true,
+      property,
+    });
+  }catch(err) {
+    res.status(500).json({
+      message: "Error getting Property",
+    })
+  }
+}
+
 const addProperty = async (req, res) => {
   try {
     const image = req.file ? req.file.filename : "";
@@ -16,10 +34,20 @@ const addProperty = async (req, res) => {
 };
 const getAllProperties = async (req, res) => {
   try {
-    const properties = await Property.find();
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+
+    const skip = (page - 1) * limit;
+    const total = await Property.countDocuments();
+    const properties = await Property.find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
     res.json({
       success: true,
       properties,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
     });
   } catch (err) {
     res.status(500).json({
@@ -117,6 +145,7 @@ const handleDeleteByID = async (req, res) => {
 };
 
 module.exports = {
+  PropertiesDetails,
   addProperty,
   getAllProperties,
   SearchFilter,

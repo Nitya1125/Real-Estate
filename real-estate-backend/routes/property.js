@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const {
+  PropertiesDetails,
   addProperty,
   getAllProperties,
   SearchFilter,
@@ -23,6 +24,7 @@ const upload = multer({ storage });
 router.post("/", upload.single('image'), addProperty); 
 router.get("/", getAllProperties);
 router.get("/search", SearchFilter);
+router.get("/:id", PropertiesDetails);
 router.put("/edit/:id", upload.single('image'),editProperty);
 router.delete("/delete/:id", handleDeleteByID);
 

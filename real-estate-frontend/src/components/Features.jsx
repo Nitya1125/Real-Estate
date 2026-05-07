@@ -54,7 +54,6 @@ const Features = () => {
       className="w-full py-24 px-6 bg-white"
     >
 
-      {/* Heading */}
       <motion.div className="text-center mb-16 ">
         <h2 className="text-4xl font-bold text-gray-900">
           Why Choose HomeVerse
@@ -64,7 +63,6 @@ const Features = () => {
         </p>
       </motion.div>
 
-      {/* Cards */}
       <motion.div
         variants={container}
         initial="hidden"

@@ -1,7 +1,18 @@
 import { motion } from "framer-motion";
 import house from "../assets/house.jpeg";
+import { useEffect, useState } from "react";
 
 const Properties = () => {
+  const [properties, setProperties] = useState([]);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      const res = await fetch("http://localhost:5000/api/properties");
+      const data = await res.json();
+      setProperties(data.properties);
+    };
+    fetchProperties();
+  },[]);
   const container = {
     hidden: {},
     show: {
@@ -45,10 +56,9 @@ const Properties = () => {
           <motion.div
             key={item}
             variants={card}
-            whileHover={{ y: -10, scale: 1.03 }} // 🔥 hover lift
+            whileHover={{ y: -10, scale: 1.03 }} 
             className="group bg-white rounded-2xl shadow-md overflow-hidden"
           >
-            {/* Image */}
             <div className="overflow-hidden">
               <img
                 src={house}

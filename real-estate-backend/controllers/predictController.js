@@ -2,12 +2,14 @@ const axios = require ("axios");
 
 const predictPrice = async (req, res) => {
     try {
-        const {location,area,bathrooms,bedrooms} = req.body
+        const {district,property_type,location,area,bathrooms,bedrooms} = req.body
         const response = await axios.post("http://127.0.0.1:5001/predict", {
             location,
             area,
             bathrooms,
-            bedrooms
+            bedrooms,
+            district,
+            property_type
         });
         res.json({
             price : response.data.predicted_price

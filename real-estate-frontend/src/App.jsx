@@ -8,6 +8,7 @@ import ContactPage from "./pages/ContactPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
+import PropertyDetails from "./pages/PropertyDetails";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -21,7 +22,7 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // ✅ SAFE USER PARSING
+  // SAFE USER PARSING
   let user = null;
 
   try {
@@ -39,12 +40,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/Properties" element={<PropertiesPage />} />
+        <Route path="/properties/:id" element={<PropertyDetails />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* ✅ Protected Admin Route */}
+        {/* Protected Admin Route */}
         <Route
           path="/admin"
           element={

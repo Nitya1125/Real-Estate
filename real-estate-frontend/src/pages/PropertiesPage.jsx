@@ -1,104 +1,111 @@
-import React from "react";
-import { motion } from "framer-motion";
-import house from "../assets/house.jpeg";
+import React, { useEffect, useState } from "react";
+import  {motion}  from "framer-motion";
 import Navbar from "../components/Navbar";
-
-const properties = [
-  {
-    id: 1,
-    title: "Modern Luxury Villa",
-    location: "Ahmedabad, Gujarat",
-    beds: 3,
-    baths: 2,
-    area: "2200 sqft",
-    image: house,
-  },
-  {
-    id: 2,
-    title: "Premium Smart Home",
-    location: "Surat, Gujarat",
-    beds: 4,
-    baths: 3,
-    area: "3000 sqft",
-    image: house,
-  },
-  {
-    id: 3,
-    title: "Minimal Glass House",
-    location: "Vadodara, Gujarat",
-    beds: 2,
-    baths: 2,
-    area: "1800 sqft",
-    image: house,
-  },
-];
+import { useNavigate } from "react-router-dom";
 
 const PropertiesPage = () => {
+  const navigate = useNavigate();
+
+  const [properties, setProperties] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/properties?page=${page}`
+        );
+
+        const data = await res.json();
+        console.log("API DATA:", data);
+
+        setProperties(data.properties || []);
+        setTotalPages(data.totalPages || 1);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchProperties();
+  }, [page]);
+
+
+
   return (
     <div className="bg-[#f8f9fb] min-h-screen">
-
       <Navbar />
 
       <div className="max-w-[1600px] mx-auto px-6 md:px-10 pt-32 pb-20">
 
-        {/* TITLE */}
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-bold text-gray-900 mb-12"
+          className="text-4xl font-bold mb-10"
         >
           Explore Properties
         </motion.h1>
 
-        {/* GRID */}
-        <div className="grid md:grid-cols-3 gap-10">
-
-          {properties.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 group"
-            >
-
-              {/* IMAGE */}
-              <div className="overflow-hidden">
+        {/* SHOW IF NO DATA */}
+        {properties.length === 0 ? (
+          <p>No properties found</p>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8">
+            {properties.map((p) => (
+              <div
+                key={p._id}
+                className="bg-white rounded-xl shadow overflow-hidden"
+              >
                 <img
-                  src={item.image}
-                  alt="property"
-                  className="w-full h-[220px] object-cover group-hover:scale-105 transition duration-500"
+                  src={
+                    p.image
+                      ? `http://localhost:5000/uploads/${p.image}`
+                      : "https://via.placeholder.com/400"
+                  }
+                  className="w-full h-48 object-cover"
                 />
-              </div>
 
-              {/* CONTENT */}
-              <div className="p-5">
+                <div className="p-4">
+                  <h2 className="font-semibold">{p.title}</h2>
+                  <p className="text-gray-500 text-sm">{p.location}</p>
 
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {item.title}
-                </h2>
+                  <div className="flex justify-between text-sm mt-2">
+                    <span>{p.bedrooms} Beds</span>
+                    <span>{p.bathrooms} Baths</span>
+                    <span>{p.area} sqft</span>
+                  </div>
 
-                <p className="text-sm text-gray-500 mt-1">
-                  {item.location}
-                </p>
+                  <p className="text-green-600 font-bold mt-2">
+                    ₹{p.price}
+                  </p>
 
-                {/* DETAILS */}
-                <div className="flex justify-between text-sm text-gray-600 mt-4">
-                  <span>{item.beds} Beds</span>
-                  <span>{item.baths} Baths</span>
-                  <span>{item.area}</span>
+                  <button
+                    onClick={() => navigate(`/properties/${p._id}`)}
+                    className="mt-2 bg-black text-white py-2 px-4 rounded"
+                  >
+                    View Details
+                  </button>
                 </div>
-
-                {/* BUTTON */}
-                <button className="mt-5 w-full bg-black text-white py-2 rounded-full text-sm hover:bg-gray-800 transition">
-                  View Details
-                </button>
-
               </div>
-            </motion.div>
-          ))}
+            ))}
+          </div>
+        )}
 
+        {/* PAGINATION */}
+        <div className="flex justify-center mt-10 gap-2">
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                page === i + 1
+                  ? "bg-black text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
 
       </div>
