@@ -1,9 +1,55 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 const ContactPage = () => {
+const [formData, setFormData] = useState({
+  First_name: "",
+  Last_name: "",
+  phone: "",
+  email: "",
+  subject: "",
+  message: ""
+})
+
+const handleChange =  (e) =>{
+  setFormData({
+    ...formData,
+    [e.target.name] : e.target.value
+  });
+}
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try{
+    const res = await fetch('http://localhost:5000/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+    const data = await res.json();
+
+    if(data.success){
+      alert("Message Sent Successfully");
+      setFormData({
+        First_name: "",
+        Last_name: "",
+        phone: "",
+        email: "",
+        subject: "",
+        message: ""
+      });
+    }else{
+      alert(data.message);
+    }
+  }catch(err){
+    console.log(err);
+    alert("Something Went Wrong");
+  }
+}
   return (
     <div className="bg-[#f8f9fb] min-h-screen">
 
@@ -70,13 +116,38 @@ const ContactPage = () => {
             className="bg-white p-8 rounded-2xl shadow-md"
           >
 
-            <form className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
 
               <div>
-                <label className="text-sm text-gray-600">Full Name</label>
+                <label className="text-sm text-gray-600">First Name</label>
+                <input
+                  name="First_name"
+                  value={formData.First_name}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Enter First name"
+                  className="w-full mt-2 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Last Name</label>
                 <input
                   type="text"
-                  placeholder="Enter your name"
+                  name="Last_name"
+                  value={formData.Last_name}
+                  onChange={handleChange}
+                  placeholder="Enter Last name"
+                  className="w-full mt-2 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Phone Number</label>
+                <input
+                  type="number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Enter Phone Number"
                   className="w-full mt-2 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
@@ -84,8 +155,22 @@ const ContactPage = () => {
               <div>
                 <label className="text-sm text-gray-600">Email</label>
                 <input
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   type="email"
                   placeholder="Enter your email"
+                  className="w-full mt-2 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Subject</label>
+                <input
+                  type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  placeholder="Subject"
                   className="w-full mt-2 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
@@ -93,6 +178,9 @@ const ContactPage = () => {
               <div>
                 <label className="text-sm text-gray-600">Message</label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   rows="4"
                   placeholder="Write your message..."
                   className="w-full mt-2 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-black"

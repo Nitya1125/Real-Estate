@@ -1,17 +1,17 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
-const Signup = () => {
+const LoginPage = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -20,25 +20,37 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleLogin = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        formData
+        "http://localhost:5000/api/auth/login",
+        formData,
+        { withCredentials: true }
       );
 
-      if (res.data.message === "User Already Exists") {
-        alert("User Already Exists");
+      if (res.data.message === "User Not Found") {
+        alert("User Not Found");
         return;
-      } else {
-        alert("Signup Successful");
       }
 
-      navigate("/");
+      if (res.data.message === "Invalid Credential") {
+        alert("Wrong Password");
+        return;
+      }
+
+      if (res.data.message === "Login Successfully") {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        if (res.data.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }
     } catch (error) {
       console.log(error);
+      alert("Login error");
     }
   };
 
@@ -61,51 +73,21 @@ const Signup = () => {
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
 
-            Secure Signup
+            Secure Login
           </span>
         </div>
 
         <div className="text-center mb-8">
           <h2 className="text-5xl md:text-6xl font-black text-[#111827] tracking-tight leading-none">
-            Create Account
+            Welcome Back
           </h2>
 
           <p className="text-gray-400 text-base mt-3">
-            Join HomeVerse and start exploring properties
+            Sign in to continue to your account
           </p>
         </div>
 
         <div className="space-y-5">
-          <div>
-            <label className="block text-[15px] font-bold text-gray-700 mb-3">
-              Full Name
-            </label>
-
-            <div className="relative">
-              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </span>
-
-              <input
-                type="text"
-                name="name"
-                onChange={handleChange}
-                value={formData.name}
-                placeholder="John Doe"
-                className="w-full pl-14 pr-5 py-4 text-[15px] text-[#111827] bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-gray-400 focus:ring-4 focus:ring-gray-100 focus:bg-white transition-all duration-200 placeholder:text-gray-300"
-              />
-            </div>
-          </div>
-
           <div>
             <label className="block text-[15px] font-bold text-gray-700 mb-3">
               Email Address
@@ -126,10 +108,9 @@ const Signup = () => {
               </span>
 
               <input
-                type="email"
                 name="email"
                 onChange={handleChange}
-                value={formData.email}
+                type="email"
                 placeholder="you@example.com"
                 className="w-full pl-14 pr-5 py-4 text-[15px] text-[#111827] bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-gray-400 focus:ring-4 focus:ring-gray-100 focus:bg-white transition-all duration-200 placeholder:text-gray-300"
               />
@@ -137,9 +118,15 @@ const Signup = () => {
           </div>
 
           <div>
-            <label className="block text-[15px] font-bold text-gray-700 mb-3">
-              Password
-            </label>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-[15px] font-bold text-gray-700">
+                Password
+              </label>
+
+              <span className="text-sm text-gray-500 hover:text-[#111827] transition-colors duration-200 cursor-pointer font-semibold">
+                Forgot password?
+              </span>
+            </div>
 
             <div className="relative">
               <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
@@ -156,11 +143,10 @@ const Signup = () => {
               </span>
 
               <input
-                type={showPassword ? "text" : "password"}
                 name="password"
                 onChange={handleChange}
-                value={formData.password}
-                placeholder="Create a strong password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
                 className="w-full pl-14 pr-14 py-4 text-[15px] text-[#111827] bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-gray-400 focus:ring-4 focus:ring-gray-100 focus:bg-white transition-all duration-200 placeholder:text-gray-300"
               />
 
@@ -199,34 +185,64 @@ const Signup = () => {
         </div>
 
         <button
-          onClick={handleSubmit}
+          onClick={handleLogin}
           className="w-full mt-8 bg-gradient-to-r from-[#111827] to-[#1f2937] hover:opacity-95 active:scale-[0.98] text-white text-[15px] font-bold tracking-wide py-4 rounded-2xl transition-all duration-300 shadow-[0_10px_30px_rgba(17,24,39,0.18)]"
         >
-          Create Account →
+          Sign In →
         </button>
 
         <div className="flex items-center gap-4 my-7">
           <div className="flex-1 h-px bg-gray-100" />
 
           <span className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">
-            already registered?
+            or continue with
           </span>
 
           <div className="flex-1 h-px bg-gray-100" />
         </div>
 
-        <p className="text-[15px] text-gray-400 text-center">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/")}
-            className="text-[#111827] font-bold hover:opacity-70 transition-opacity duration-200 cursor-pointer"
+        <div className="flex justify-center">
+          <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const res = await axios.post(
+                    "http://localhost:5000/api/auth/google",
+                    { token: credentialResponse.credential }
+                  );
+
+                  localStorage.setItem("token", res.data.token);
+                  localStorage.setItem("user", JSON.stringify(res.data.user));
+
+                  if (res.data.user.role === "admin") {
+                    navigate("/admin");
+                  } else {
+                    navigate("/dashboard");
+                  }
+                } catch (err) {
+                  console.log(err);
+                  alert("Google Login error");
+                }
+              }}
+              onError={() => {
+                console.log("Google Login Failed");
+              }}
+            />
+          </div>
+        </div>
+
+        <p className="text-[15px] text-gray-400 text-center mt-7">
+          Don&apos;t have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-[#111827] font-bold hover:opacity-70 transition-opacity duration-200"
           >
-            Sign in
-          </span>
+            Sign up
+          </Link>
         </p>
       </div>
     </div>
   );
 };
 
-export default Signup;
+export default LoginPage;

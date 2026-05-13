@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const CTA = () => {
+  const navigate = useNavigate();
   return (
     <motion.section
       initial={{ opacity: 0, scale: 0.95 }}
@@ -36,6 +38,7 @@ const CTA = () => {
           </motion.button>
 
           <motion.button
+            onClick={() => navigate("/contact")}
             whileHover={{ scale: 1.05 }}
             className="border border-white px-6 py-3 rounded-full hover:bg-white hover:text-black transition"
           >

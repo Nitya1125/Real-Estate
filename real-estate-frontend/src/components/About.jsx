@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import house from "../assets/house.jpeg";
 import { CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
   return (
     <section className="max-w-[1500px] mx-auto px-6 md:px-10 py-24">
 
@@ -61,6 +63,7 @@ const About = () => {
           </div>
 
           <motion.button
+            onClick={() => navigate("/about")}
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}

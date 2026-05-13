@@ -1,7 +1,10 @@
 import React from 'react'
 import { Mail,Phone,MapPin } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
 
 const Footer = () => {
+  const navigate = useNavigate(); 
   return (
     <footer className="w-full bg-gray-900 text-white py-16 px-6 md:px-20">
 
@@ -19,9 +22,9 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2 text-gray-400">
-            <li className="hover:text-white cursor-pointer">Home</li>
-            <li className="hover:text-white cursor-pointer">Properties</li>
-            <li className="hover:text-white cursor-pointer">About</li>
+            <li onClick={() => navigate('/dashboard')} className="hover:text-white cursor-pointer">Home</li>
+            <li onClick={() => navigate("/properties")} className="hover:text-white cursor-pointer">Properties</li>
+            <li onClick={() => navigate("/about")} className="hover:text-white cursor-pointer">About</li>
             <li className="hover:text-white cursor-pointer">Contact</li>
           </ul>
         </div>

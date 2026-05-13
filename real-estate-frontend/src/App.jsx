@@ -5,10 +5,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PropertiesPage from "./pages/PropertiesPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
-import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/AdminDashboard";
 import PropertyDetails from "./pages/PropertyDetails";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoutes from "./components/ProtectedRoutes";
+import Profile from "./pages/Profile";
+import WishList from "./pages/WishList";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -38,12 +41,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/Properties" element={<PropertiesPage />} />
-        <Route path="/properties/:id" element={<PropertyDetails />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<LoginPage/>}/>
+        <Route path="/dashboard" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
+        <Route path="/Properties" element={<ProtectedRoutes> <PropertiesPage /> </ProtectedRoutes>} />
+        <Route path="/properties/:id" element={<ProtectedRoutes><PropertyDetails /></ProtectedRoutes>} />
+        <Route path="/about" element={<ProtectedRoutes><AboutPage /></ProtectedRoutes>} />
+        <Route path="/contact" element={<ProtectedRoutes><ContactPage /></ProtectedRoutes>} />
+        <Route path="/profile" element={<ProtectedRoutes><Profile /></ProtectedRoutes>} />
+        <Route path ="/wishlist" element={<ProtectedRoutes><WishList/></ProtectedRoutes>}/>
         <Route path="/signup" element={<Signup />} />
 
         {/* Protected Admin Route */}
@@ -53,7 +58,7 @@ function App() {
             user?.role === "admin" ? (
               <AdminDashboard />
             ) : (
-              <Navigate to="/login" />
+              <Navigate to="/" />
             )
           }
         />

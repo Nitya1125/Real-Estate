@@ -39,4 +39,47 @@ async function handleDeleteUserById(req, res) {
     }
 }
 
-module.exports={getAllUsers, handleEditUserById, handleDeleteUserById};
+async function addToWishList(req,res){
+    try{
+        const userId = req.user.id;
+        const {propertyId} = req.body;
+        
+        const user = await User.findById(userId);
+        if(!user.wishlist.includes(propertyId)){ 
+            user.wishlist.push(propertyId);
+            await user.save();
+        }
+        res.json({
+            success: true,
+            message: "Property added to wishlist",
+            wishlist: user.wishlist
+        });
+    }catch(err){
+        res.status(500).json({ message: "Error adding to wishlist" });
+    }
+}
+
+async function getWishlist(req,res){
+    try{
+        const userId = req.user.id;
+        const user = await User.findById(userId).populate("wishlist");
+        res.json(user.wishlist);
+    }catch(err){
+        res.status(500).json({ message: "Error getting wishlist" });
+    }
+}
+
+async function getCurrentUser(req,res){
+    try{
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+        if(!user) {
+            return res.status(404).json({ message: "Error getting current user" });
+        }
+        res.json(user);
+    }catch(err){
+        res.status(500).json({ message: "Error getting current user" });
+    }
+}
+
+module.exports={getAllUsers, handleEditUserById, handleDeleteUserById, addToWishList, getWishlist, getCurrentUser};

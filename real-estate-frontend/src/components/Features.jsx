@@ -1,5 +1,10 @@
 import { motion } from "framer-motion";
-import { Brain, ShieldCheck, TrendingUp, Home } from "lucide-react";
+import {
+  Brain,
+  ShieldCheck,
+  TrendingUp,
+  Home,
+} from "lucide-react";
 
 const features = [
   {
@@ -9,8 +14,8 @@ const features = [
   },
   {
     icon: <ShieldCheck size={28} />,
-    title: "Secure Transactions",
-    desc: "Safe and trusted property deals.",
+    title: "Verified Listings",
+    desc: "Browse trusted and verified properties.",
   },
   {
     icon: <TrendingUp size={28} />,
@@ -25,23 +30,28 @@ const features = [
 ];
 
 const Features = () => {
-
   const container = {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: 0.2, 
+        staggerChildren: 0.2,
       },
     },
   };
 
   const card = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    hidden: {
+      opacity: 0,
+      y: 50,
+      scale: 0.95,
+    },
     show: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5 },
+      transition: {
+        duration: 0.5,
+      },
     },
   };
 
@@ -53,11 +63,11 @@ const Features = () => {
       viewport={{ once: false }}
       className="w-full py-24 px-6 bg-white"
     >
-
-      <motion.div className="text-center mb-16 ">
+      <motion.div className="text-center mb-16">
         <h2 className="text-4xl font-bold text-gray-900">
           Why Choose HomeVerse
         </h2>
+
         <p className="text-gray-500 mt-3">
           Smart real estate powered by AI
         </p>
@@ -74,29 +84,29 @@ const Features = () => {
           <motion.div
             key={index}
             variants={card}
-            whileHover={{ y: -10, scale: 1.05 }}
-            className="group p-6 rounded-2xl border bg-white shadow-sm hover:shadow-xl transition"
+            whileHover={{
+              y: -10,
+              scale: 1.05,
+            }}
+            className="group p-6 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
           >
-
             <motion.div
-              className="mb-4"
-              whileHover={{ scale: 1.2 }}
+              className="mb-4 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-[#111827]"
+              whileHover={{ scale: 1.15 }}
             >
               {item.icon}
             </motion.div>
 
-            <h3 className="font-semibold text-lg mb-2">
+            <h3 className="font-semibold text-lg text-[#111827] mb-2">
               {item.title}
             </h3>
 
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm leading-6">
               {item.desc}
             </p>
-
           </motion.div>
         ))}
       </motion.div>
-
     </motion.section>
   );
 };

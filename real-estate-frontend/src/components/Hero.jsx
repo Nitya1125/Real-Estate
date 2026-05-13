@@ -2,8 +2,10 @@ import React from 'react'
 import house from '../assets/house.jpeg'
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion"; 
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <div className="max-w-[1600px] mx-auto px-6 md:px-10 pt-32">
 
@@ -29,6 +31,7 @@ const Hero = () => {
 
           {/* BUTTON */}
           <motion.button
+            onClick={() => navigate("/properties")}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.4 }}

@@ -1,34 +1,56 @@
 import { motion } from "framer-motion";
-import house from "../assets/house.jpeg";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
     const fetchProperties = async () => {
-      const res = await fetch("http://localhost:5000/api/properties");
-      const data = await res.json();
-      setProperties(data.properties);
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/properties"
+        );
+
+        const data = await res.json();
+
+        const latestProperties = (
+          data.properties || data
+        )
+          .slice(-3)
+          .reverse();
+
+        setProperties(latestProperties);
+      } catch (error) {
+        console.log(error);
+      }
     };
+
     fetchProperties();
-  },[]);
+  }, []);
+
   const container = {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: 0.2, 
+        staggerChildren: 0.2,
       },
     },
   };
 
   const card = {
-    hidden: { opacity: 0, y: 60, scale: 0.95 },
+    hidden: {
+      opacity: 0,
+      y: 60,
+      scale: 0.95,
+    },
     show: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5 },
+      transition: {
+        duration: 0.5,
+      },
     },
   };
 
@@ -38,53 +60,84 @@ const Properties = () => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="max-w-[1500px] mx-auto px-6 py-20"
+      className="max-w-[1500px] mx-auto px-6 py-24"
     >
-      <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
-        Featured Properties
-      </h2>
+      <div className="text-center mb-14">
+        <h2 className="text-4xl font-black text-[#111827]">
+          Featured Properties
+        </h2>
 
-      {/* Cards Container */}
+        <p className="text-gray-500 mt-3">
+          Explore our latest premium listings
+        </p>
+      </div>
+
       <motion.div
         variants={container}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true }}
-        className="grid md:grid-cols-3 gap-8"
+        className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
-        {[1, 2, 3].map((item) => (
+        {properties.map((property) => (
           <motion.div
-            key={item}
+            key={property._id}
             variants={card}
-            whileHover={{ y: -10, scale: 1.03 }} 
-            className="group bg-white rounded-2xl shadow-md overflow-hidden"
+            whileHover={{
+              y: -10,
+              scale: 1.02,
+            }}
+            className="group bg-white rounded-[28px] border border-gray-100 shadow-sm hover:shadow-2xl overflow-hidden transition-all duration-300"
           >
-            <div className="overflow-hidden">
+            <div className="relative overflow-hidden">
               <img
-                src={house}
-                className="w-full h-56 object-cover transition duration-500 group-hover:scale-110"
+                src={`http://localhost:5000/uploads/${property.image}`}
+                alt={property.title}
+                className="w-full h-64 object-cover transition duration-700 group-hover:scale-110"
               />
-            </div>
 
-            {/* Content */}
-            <div className="p-5">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Modern Luxury Villa
-              </h3>
-
-              <p className="text-gray-500 text-sm">
-                Surat, Gujarat
-              </p>
-
-              <div className="flex justify-between mt-4 text-sm text-gray-600">
-                <span>3 Beds</span>
-                <span>2 Baths</span>
-                <span>2200 sqft</span>
+              <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold text-[#111827] shadow-sm">
+                {property.type}
               </div>
 
-              <button className="mt-5 w-full bg-black text-white py-2 rounded-full hover:bg-gray-800 transition">
-                View Details
-              </button>
+              <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white px-5 py-2 rounded-2xl font-bold shadow-lg">
+                ₹
+                {Number(property.price).toLocaleString(
+                  "en-IN"
+                )}
+              </div>
+            </div>
+
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-[#111827] line-clamp-1">
+                {property.title}
+              </h3>
+
+              <p className="text-gray-500 mt-2 text-sm">
+                {property.location}
+              </p>
+
+              <div className="flex justify-between mt-6 bg-[#f9fafb] rounded-2xl px-5 py-4 text-sm text-gray-700">
+                <span>
+                  {property.bedrooms} Beds
+                </span>
+
+                <span>
+                  {property.bathrooms} Baths
+                </span>
+
+                <span>
+                  {property.area} sqft
+                </span>
+              </div>
+
+              <Link
+                to={`/property/${property._id}`}
+              >
+                <button className="mt-6 w-full bg-[#111827] text-white py-3 rounded-2xl font-semibold hover:scale-[1.02] transition duration-300">
+                  View Details
+                </button>
+              </Link>
             </div>
           </motion.div>
         ))}
