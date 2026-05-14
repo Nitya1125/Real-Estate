@@ -25,7 +25,7 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 const AdminDashboard = () => {
-  const token = localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
   const [tab, setTab] = useState(0);
   const [users, setUsers] = useState([]);
@@ -42,6 +42,8 @@ const AdminDashboard = () => {
     price: "",
     type: "Apartment",
   });
+
+  // ================= FETCH ALL =================
 
   const fetchAll = async () => {
     try {
@@ -71,8 +73,13 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchAll();
-  }, []);
+  const loadData = async () => {
+    await fetchAll();
+  };
+  loadData();
+}, [token]);
+
+  // ================= LOGOUT =================
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -80,71 +87,68 @@ const AdminDashboard = () => {
     window.location.href = "/";
   };
 
+  // ================= HANDLE CHANGE =================
+
   const handleChange = async (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  // Update form values
-  let updated = {
-    ...form,
-    [name]: value,
-  };
+    let updated = {
+      ...form,
+      [name]: value,
+    };
 
-  // Generate title automatically
-  if (
-    updated.bedrooms &&
-    updated.location &&
-    updated.type
-  ) {
-    updated.title = `${updated.bedrooms}BHK ${updated.type} in ${updated.location}`;
-  }
+    // Auto generate title
+    if (
+      updated.bedrooms &&
+      updated.location &&
+      updated.type
+    ) {
+      updated.title = `${updated.bedrooms}BHK ${updated.type} in ${updated.location}`;
+    }
 
-  // Update form immediately
-  setForm(updated);
+    setForm(updated);
 
-  // Predict price when all fields available
-  if (
-    updated.area &&
-    updated.bedrooms &&
-    updated.bathrooms &&
-    updated.location &&
-    updated.type
-  ) {
-    try {
+    // Predict price
+    if (
+      updated.area &&
+      updated.bedrooms &&
+      updated.bathrooms &&
+      updated.location &&
+      updated.type
+    ) {
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/predict-price",
+          {
+            district: updated.location,
+            property_type: updated.type,
+            location: updated.location,
+            area: Number(updated.area),
+            bedrooms: Number(updated.bedrooms),
+            bathrooms: Number(updated.bathrooms),
+          }
+        );
 
-      const res = await axios.post(
-        "http://localhost:5000/api/predict-price",
-        {
-          district: updated.location,
-          property_type: updated.type,
-          location: updated.location,
-          area: Number(updated.area),
-          bedrooms: Number(updated.bedrooms),
-          bathrooms: Number(updated.bathrooms),
-        }
-      );
-
-      console.log(res.data);
-
-      // Set predicted price
-      setForm((prev) => ({
-        ...prev,
-        price:
-          res.data.price ||
-          res.data.predicted_price ||
-          "",
-      }));
-
-    } catch (err) {
-
-      console.log(err);
-
+        setForm((prev) => ({
+          ...prev,
+          price:
+            res.data.price ||
+            res.data.predicted_price ||
+            "",
+        }));
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
-};;
+
+  // ================= HANDLE IMAGE =================
 
   const handleImage = (e) => {
     setImage(e.target.files[0]);
   };
+
+  // ================= ADD / UPDATE PROPERTY =================
 
   const handleSubmit = async () => {
     try {
@@ -179,6 +183,7 @@ const AdminDashboard = () => {
         );
       }
 
+      // Reset form
       setForm({
         title: "",
         location: "",
@@ -193,11 +198,15 @@ const AdminDashboard = () => {
       setEditingProperty(null);
       setTab(0);
 
+      // Refresh properties
       fetchAll();
+
     } catch (err) {
       console.log(err);
     }
   };
+
+  // ================= DELETE PROPERTY =================
 
   const deleteProperty = async (id) => {
     try {
@@ -206,16 +215,21 @@ const AdminDashboard = () => {
       );
 
       fetchAll();
+
     } catch (err) {
       console.log(err);
     }
   };
+
+  // ================= EDIT PROPERTY =================
 
   const editProperty = (p) => {
     setEditingProperty(p);
     setForm(p);
     setTab(1);
   };
+
+  // ================= DELETE USER =================
 
   const deleteUser = async (id) => {
     try {
@@ -229,6 +243,7 @@ const AdminDashboard = () => {
       );
 
       fetchAll();
+
     } catch (err) {
       console.log(err);
     }

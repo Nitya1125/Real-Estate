@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import Profile from "./pages/Profile";
 import WishList from "./pages/WishList";
+import RequestPropertyView from "./pages/RequestPropertyView";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
         <Route path="/Properties" element={<ProtectedRoutes> <PropertiesPage /> </ProtectedRoutes>} />
         <Route path="/properties/:id" element={<ProtectedRoutes><PropertyDetails /></ProtectedRoutes>} />
+        <Route path = "/request/visit/:id" element={<ProtectedRoutes><RequestPropertyView /></ProtectedRoutes>}/>
         <Route path="/about" element={<ProtectedRoutes><AboutPage /></ProtectedRoutes>} />
         <Route path="/contact" element={<ProtectedRoutes><ContactPage /></ProtectedRoutes>} />
         <Route path="/profile" element={<ProtectedRoutes><Profile /></ProtectedRoutes>} />
