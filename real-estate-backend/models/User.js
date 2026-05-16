@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
         default: "user"
     },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
+    resetToken:{
+        type: String
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model("User", userSchema);

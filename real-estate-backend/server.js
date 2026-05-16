@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes")
 const contactRouter = require("./routes/contactRoutes")
 const userRoutes = require("./routes/userRoutes")
 const ViewRoute = require("./routes/ViewPropertyRoutes")
+const forgotRoutes = require("./routes/forgotPasswordRoutes")
 const cors = require("cors")
 const cookieParser = require("cookie-parser");
 
@@ -33,6 +34,7 @@ app.get("/api/protected", authMiddleware,  (req,res) => {
 
 app.use("/api/properties", ViewRoute);
 app.use("/api/users", userRoutes);
+app.use("/api/auth", forgotRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/contact",contactRouter);
 

@@ -13,6 +13,8 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 import Profile from "./pages/Profile";
 import WishList from "./pages/WishList";
 import RequestPropertyView from "./pages/RequestPropertyView";
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPage";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage/>}/>
+        <Route path="/forgot-password" element={<ForgotPassword /> }/>
+        <Route path="/reset-password/:token" element={<ResetPassword/>} />
         <Route path="/dashboard" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
         <Route path="/Properties" element={<ProtectedRoutes> <PropertiesPage /> </ProtectedRoutes>} />
         <Route path="/properties/:id" element={<ProtectedRoutes><PropertyDetails /></ProtectedRoutes>} />

@@ -43,8 +43,6 @@ const token = localStorage.getItem("token");
     type: "Apartment",
   });
 
-  // ================= FETCH ALL =================
-
   const fetchAll = async () => {
     try {
       const usersRes = await axios.get(
@@ -79,15 +77,12 @@ const token = localStorage.getItem("token");
   loadData();
 }, [token]);
 
-  // ================= LOGOUT =================
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/";
   };
-
-  // ================= HANDLE CHANGE =================
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -97,7 +92,6 @@ const token = localStorage.getItem("token");
       [name]: value,
     };
 
-    // Auto generate title
     if (
       updated.bedrooms &&
       updated.location &&
@@ -142,13 +136,11 @@ const token = localStorage.getItem("token");
     }
   };
 
-  // ================= HANDLE IMAGE =================
 
   const handleImage = (e) => {
     setImage(e.target.files[0]);
   };
 
-  // ================= ADD / UPDATE PROPERTY =================
 
   const handleSubmit = async () => {
     try {
@@ -206,7 +198,6 @@ const token = localStorage.getItem("token");
     }
   };
 
-  // ================= DELETE PROPERTY =================
 
   const deleteProperty = async (id) => {
     try {
@@ -221,7 +212,6 @@ const token = localStorage.getItem("token");
     }
   };
 
-  // ================= EDIT PROPERTY =================
 
   const editProperty = (p) => {
     setEditingProperty(p);
@@ -229,7 +219,6 @@ const token = localStorage.getItem("token");
     setTab(1);
   };
 
-  // ================= DELETE USER =================
 
   const deleteUser = async (id) => {
     try {

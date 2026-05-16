@@ -123,9 +123,9 @@ const LoginPage = () => {
                 Password
               </label>
 
-              <span className="text-sm text-gray-500 hover:text-[#111827] transition-colors duration-200 cursor-pointer font-semibold">
+              <Link to="/forgot-password" className="text-sm text-gray-500 hover:text-[#111827] transition-colors duration-200 cursor-pointer font-semibold">
                 Forgot password?
-              </span>
+              </Link>
             </div>
 
             <div className="relative">
