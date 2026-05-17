@@ -91,7 +91,11 @@ const Properties = () => {
           >
             <div className="relative overflow-hidden">
               <img
-                src={`http://localhost:5000/uploads/${property.image}`}
+                src={
+                  property.image
+                    ? `http://localhost:5000/uploads/${property.image}`
+                    : "https://placehold.co/600x400"
+                }
                 alt={property.title}
                 className="w-full h-64 object-cover transition duration-700 group-hover:scale-110"
               />
@@ -132,7 +136,7 @@ const Properties = () => {
               </div>
 
               <Link
-                to={`/property/${property._id}`}
+                to={`/properties/${property._id}`}
               >
                 <button className="mt-6 w-full bg-[#111827] text-white py-3 rounded-2xl font-semibold hover:scale-[1.02] transition duration-300">
                   View Details

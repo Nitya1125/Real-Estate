@@ -30,8 +30,6 @@ app.get("/api/protected", authMiddleware,  (req,res) => {
         user : req.user
     })
 })
-
-
 app.use("/api/properties", ViewRoute);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", forgotRoutes);

@@ -35,7 +35,7 @@ const addProperty = async (req, res) => {
 const getAllProperties = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 20;
+    const limit = parseInt(req.query.limit) || 20;
 
     const skip = (page - 1) * limit;
     const total = await Property.countDocuments();

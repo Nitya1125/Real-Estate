@@ -55,7 +55,7 @@ const token = localStorage.getItem("token");
       );
 
       const propRes = await axios.get(
-        "http://localhost:5000/api/properties"
+        "http://localhost:5000/api/properties?page=1&limit=1000",
       );
 
       setUsers(usersRes.data.users || usersRes.data);
