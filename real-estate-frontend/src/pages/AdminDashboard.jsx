@@ -46,7 +46,7 @@ const token = localStorage.getItem("token");
   const fetchAll = async () => {
     try {
       const usersRes = await axios.get(
-        "http://localhost:5000/api/users",
+        "https://real-estate-dhap.onrender.com/api/users",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const token = localStorage.getItem("token");
       );
 
       const propRes = await axios.get(
-        "http://localhost:5000/api/properties?page=1&limit=1000",
+        "https://real-estate-dhap.onrender.com/api/properties?page=1&limit=1000",
       );
 
       setUsers(usersRes.data.users || usersRes.data);
@@ -112,7 +112,7 @@ const token = localStorage.getItem("token");
     ) {
       try {
         const res = await axios.post(
-          "http://localhost:5000/api/predict-price",
+          "https://real-estate-dhap.onrender.com/api/predict-price",
           {
             district: updated.location,
             property_type: updated.type,
@@ -163,13 +163,13 @@ const token = localStorage.getItem("token");
 
       if (editingProperty) {
         await axios.put(
-          `http://localhost:5000/api/properties/edit/${editingProperty._id}`,
+          `https://real-estate-dhap.onrender.com/api/properties/edit/${editingProperty._id}`,
           data,
           config
         );
       } else {
         await axios.post(
-          "http://localhost:5000/api/properties",
+          "https://real-estate-dhap.onrender.com/api/properties",
           data,
           config
         );
@@ -202,7 +202,7 @@ const token = localStorage.getItem("token");
   const deleteProperty = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/properties/delete/${id}`
+        `https://real-estate-dhap.onrender.com/api/properties/delete/${id}`
       );
 
       fetchAll();
@@ -223,7 +223,7 @@ const token = localStorage.getItem("token");
   const deleteUser = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/users/${id}`,
+        `https://real-estate-dhap.onrender.com/api/users/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -381,7 +381,7 @@ const token = localStorage.getItem("token");
                   height="180"
                   image={
                     p.image
-                      ? `http://localhost:5000/uploads/${p.image}`
+                      ? `https://real-estate-dhap.onrender.com/uploads/${p.image}`
                       : "https://placehold.co/600x400"
                   }
                 />

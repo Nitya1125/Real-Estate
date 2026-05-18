@@ -23,7 +23,7 @@ const RequestPropertyView = () => {
 useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/properties/${id}`);
+        const res = await fetch(`https://real-estate-dhap.onrender.com/api/properties/${id}`);
         const data = await res.json();
 
         setProperty(data.property);
@@ -52,7 +52,7 @@ useEffect(() => {
     try {
 
       const response = await fetch(
-        "http://localhost:5000/api/properties/visit/request",
+        "https://real-estate-dhap.onrender.com/api/properties/visit/request",
         {
           method: "POST",
 
@@ -115,7 +115,7 @@ useEffect(() => {
           <img
             src={
               property?.image
-                ? `http://localhost:5000/uploads/${property.image}`
+                ? `https://real-estate-dhap.onrender.com/uploads/${property.image}`
                 : "https://placehold.co/600x400"
             }
             alt="property"

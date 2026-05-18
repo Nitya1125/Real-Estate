@@ -20,7 +20,7 @@ const PropertiesPage = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/properties?page=${page}`);
+        const res = await fetch(`https://real-estate-dhap.onrender.com/api/properties?page=${page}`);
         const data = await res.json();
 
         setProperties(data.properties || []);
@@ -36,7 +36,7 @@ const PropertiesPage = () => {
   const handleSearch = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/properties/search?location=${searchlocation}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&minPrice=${minPrice}&maxPrice=${maxPrice}&minArea=${minArea}&property_type=${propertyType}`
+        `https://real-estate-dhap.onrender.com/api/properties/search?location=${searchlocation}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&minPrice=${minPrice}&maxPrice=${maxPrice}&minArea=${minArea}&property_type=${propertyType}`
       );
 
       const data = await res.json();
@@ -288,7 +288,7 @@ const PropertiesPage = () => {
                   <img
                     src={
                       p.image
-                        ? `http://localhost:5000/uploads/${p.image}`
+                        ? `https://real-estate-dhap.onrender.com/uploads/${p.image}`
                         : "https://images.unsplash.com/photo-1518791841217-8f162f1e3631?auto=format&fit=crop&w=800&q=60"
                     }
                     alt={p.title}

@@ -13,7 +13,7 @@ const PropertyDetails = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/properties/${id}`);
+        const res = await fetch(`https://real-estate-dhap.onrender.com/api/properties/${id}`);
         const data = await res.json();
 
         setProperty(data.property);
@@ -31,7 +31,7 @@ const PropertyDetails = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const res = await fetch(`http://localhost:5000/api/users/wishlist`, {
+      const res = await fetch(`https://real-estate-dhap.onrender.com/api/users/wishlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +184,7 @@ const PropertyDetails = () => {
           className="relative w-full h-[460px] md:h-[560px] rounded-[36px] overflow-hidden mb-10 shadow-[0_20px_70px_rgba(0,0,0,0.12)]"
         >
           <img
-            src={`http://localhost:5000/uploads/${property.image}`}
+            src={`https://real-estate-dhap.onrender.com/uploads/${property.image}`}
             alt={property.title}
             className="w-full h-full object-cover"
           />

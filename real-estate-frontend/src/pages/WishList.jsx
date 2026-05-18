@@ -6,7 +6,7 @@ const WishlistPage = () => {
   const fetchWishlist = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/users/wishlist", {
+      const response = await fetch("https://real-estate-dhap.onrender.com/api/users/wishlist", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,7 +94,7 @@ const WishlistPage = () => {
                 {/* Image */}
                 <div className="relative overflow-hidden">
                   <img
-                    src={`http://localhost:5000/uploads/${property.image}`}
+                    src={`https://real-estate-dhap.onrender.com/uploads/${property.image}`}
                     alt={property.title}
                     className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
                   />

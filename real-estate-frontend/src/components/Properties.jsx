@@ -9,7 +9,7 @@ const Properties = () => {
     const fetchProperties = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/properties"
+          "https://real-estate-dhap.onrender.com/api/properties"
         );
 
         const data = await res.json();
@@ -93,7 +93,7 @@ const Properties = () => {
               <img
                 src={
                   property.image
-                    ? `http://localhost:5000/uploads/${property.image}`
+                    ? `https://real-estate-dhap.onrender.com/uploads/${property.image}`
                     : "https://placehold.co/600x400"
                 }
                 alt={property.title}

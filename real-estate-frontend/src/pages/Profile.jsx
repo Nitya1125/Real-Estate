@@ -21,7 +21,7 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:5000/api/users/me",
+          "https://real-estate-dhap.onrender.com/api/users/me",
           {
             headers: {
               Authorization: `Bearer ${token}`,

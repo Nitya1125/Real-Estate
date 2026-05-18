@@ -23,7 +23,7 @@ const LoginPage = () => {
   const handleLogin = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "https://real-estate-dhap.onrender.com/api/auth/login",
         formData,
         { withCredentials: true }
       );
@@ -207,7 +207,7 @@ const LoginPage = () => {
               onSuccess={async (credentialResponse) => {
                 try {
                   const res = await axios.post(
-                    "http://localhost:5000/api/auth/google",
+                    "https://real-estate-dhap.onrender.com/api/auth/google",
                     { token: credentialResponse.credential }
                   );
 
