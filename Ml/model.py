@@ -1,6 +1,10 @@
 import pandas as pd
+import os
 
-data = pd.read_csv("../real-estate-backend/data/properties.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(BASE_DIR, "../real-estate-backend/data/properties.csv")
+
+data = pd.read_csv(csv_path)
 
 print(data.head())
 
