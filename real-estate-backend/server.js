@@ -14,8 +14,12 @@ const authMiddleware = require("./middleware/auth");
 connectDB();
 const app = express();
 app.use(cors({
-    credentials: true,
-    origin: "http://localhost:5173"}))
+  credentials: true,
+  origin: [
+    "http://localhost:5173",
+    "https://real-estate-gold-sigma.vercel.app"
+  ]
+}));
 app.use(express.json());
 app.use(cookieParser());
 
