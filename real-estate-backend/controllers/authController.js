@@ -54,7 +54,7 @@ async function handleUserLogin(req, res) {
       });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
     res.cookie("token", token, {
@@ -81,9 +81,7 @@ async function handleGoogleLogin(req, res) {
 
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience:
-        "872873640503-udo11033r9u2rgtoabej6o3l6kimfhjf.apps.googleusercontent.com",
-    });
+      audience: process.env.GOOGLE_CLIENT_ID,   });
 
     const payload = ticket.getPayload();
     const email = payload.email;
@@ -99,7 +97,7 @@ async function handleGoogleLogin(req, res) {
       });
     }
 
-    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const jwtToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
