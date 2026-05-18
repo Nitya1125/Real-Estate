@@ -79,6 +79,7 @@ const WishlistPage = () => {
             <p className="text-2xl font-semibold text-neutral-700 mb-2">
               No saved properties yet
             </p>
+            
             <p className="text-sm text-stone-400">
               Properties you save will appear here
             </p>

@@ -4,9 +4,7 @@ const jwt = require("jsonwebtoken");
 const { OAuth2Client, JWT } = require("google-auth-library");
 require("dotenv").config();
 
-const client = new OAuth2Client(
-  "872873640503-udo11033r9u2rgtoabej6o3l6kimfhjf.apps.googleusercontent.com",
-);
+const client = new OAuth2Client( process.env.GOOGLE_CLIENT_ID,);
 async function handleUserSignup(req, res) {
   console.log(req.body);
   const { name, email, password } = req.body;
