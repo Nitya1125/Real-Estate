@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Footer from '../components/Footer';
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -141,6 +142,7 @@ const PropertyDetails = () => {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-[#f6f7fb]">
       <div className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 md:px-10 h-20 flex items-center justify-between">
@@ -437,6 +439,8 @@ const PropertyDetails = () => {
 
       <div className="h-16" />
     </div>
+    <Footer/>
+  </>
   );
 };
 

@@ -11,9 +11,10 @@ const Dashboard = () => {
     <div className="bg-[#f8f9fb] min-h-screen">
 
       <Navbar />
-      <main className="pt-28">
+      <main>
           <Hero />
           <Properties />
+          <br/>
           <Features />
           <About />
           <CTA />

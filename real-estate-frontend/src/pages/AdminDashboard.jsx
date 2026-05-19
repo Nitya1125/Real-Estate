@@ -47,6 +47,7 @@ const token = localStorage.getItem("token");
     try {
       const usersRes = await axios.get(
         "https://real-estate-dhap.onrender.com/api/users",
+      
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,8 +58,9 @@ const token = localStorage.getItem("token");
       const propRes = await axios.get(
         "https://real-estate-dhap.onrender.com/api/properties?page=1&limit=1000",
       );
+      console.log(usersRes.data);
 
-      setUsers(usersRes.data.users || usersRes.data);
+      setUsers(usersRes.data.data || []);
 
       setProperties(
         Array.isArray(propRes.data)

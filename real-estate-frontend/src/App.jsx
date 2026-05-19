@@ -42,6 +42,7 @@ function App() {
   if (loading) return <Splashscreen />;
 
   return (
+    <div className="overflow-x-hidden">
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage/>}/>
@@ -70,6 +71,7 @@ function App() {
         />
       </Routes>
     </BrowserRouter>
+    </div>
   );
 }
 

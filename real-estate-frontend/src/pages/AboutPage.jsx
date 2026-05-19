@@ -4,6 +4,7 @@ import { CheckCircle, Brain, Building2, TrendingUp } from "lucide-react";
 import house from "../assets/house.jpeg";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const features = [
   "AI-powered property price prediction",
@@ -33,6 +34,7 @@ const stats = [
 const AboutPage = () => {
   const navigate = useNavigate();
   return (
+    <>
     <div className="bg-[#f6f7fb] min-h-screen overflow-hidden">
       <Navbar />
 
@@ -177,12 +179,14 @@ const AboutPage = () => {
             the way people buy, sell, and discover homes.
           </p>
 
-          <button className="relative z-10 mt-10 bg-white text-[#111827] px-10 py-4 rounded-2xl font-bold hover:scale-105 transition duration-300">
+          <button onClick={() => navigate("/Properties")} className="relative z-10 mt-10 bg-white text-[#111827] px-10 py-4 rounded-2xl font-bold hover:scale-105 transition duration-300">
             Get Started
           </button>
         </motion.div>
       </section>
     </div>
+    <Footer/>
+    </>
   );
 };
 

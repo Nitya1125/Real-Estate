@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const PropertiesPage = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const PropertiesPage = () => {
     "w-full bg-white border border-gray-200 text-sm text-gray-600 placeholder-gray-400 px-4 py-2.5 rounded-2xl focus:outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition-all duration-200";
 
   return (
+    <>
     <div className="bg-[#f6f7fb] min-h-screen">
       <Navbar />
 
@@ -437,6 +439,8 @@ const PropertiesPage = () => {
         )}
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

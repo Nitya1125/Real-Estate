@@ -2,6 +2,7 @@
   import { motion } from "framer-motion";
   import Navbar from "../components/Navbar";
   import { Mail, Phone, MapPin } from "lucide-react";
+import Footer from "../components/Footer";
 
   const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -51,6 +52,7 @@
     }
   }
     return (
+      <>
       <div className="bg-[#f8f9fb] min-h-screen">
 
         <Navbar />
@@ -202,6 +204,8 @@
 
         </div>
       </div>
+      <Footer/>
+      </>
     );
   };
 
