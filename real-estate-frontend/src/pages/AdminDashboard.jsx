@@ -15,6 +15,7 @@ import {
   IconButton,
 } from "@mui/material";
 
+
 import KingBedIcon from "@mui/icons-material/KingBed";
 import BathtubIcon from "@mui/icons-material/Bathtub";
 import SquareFootIcon from "@mui/icons-material/SquareFoot";
@@ -25,7 +26,7 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 const AdminDashboard = () => {
-const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   const [tab, setTab] = useState(0);
   const [users, setUsers] = useState([]);
@@ -47,12 +48,12 @@ const token = localStorage.getItem("token");
     try {
       const usersRes = await axios.get(
         "https://real-estate-dhap.onrender.com/api/users",
-      
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const propRes = await axios.get(
@@ -60,12 +61,12 @@ const token = localStorage.getItem("token");
       );
       console.log(usersRes.data);
 
-      setUsers(usersRes.data.data || []);
+      setUsers(usersRes.data || []);
 
       setProperties(
         Array.isArray(propRes.data)
           ? propRes.data
-          : propRes.data.properties || []
+          : propRes.data.properties || [],
       );
     } catch (err) {
       console.log(err);
@@ -73,12 +74,11 @@ const token = localStorage.getItem("token");
   };
 
   useEffect(() => {
-  const loadData = async () => {
-    await fetchAll();
-  };
-  loadData();
-}, [token]);
-
+    const loadData = async () => {
+      await fetchAll();
+    };
+    loadData();
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -94,11 +94,7 @@ const token = localStorage.getItem("token");
       [name]: value,
     };
 
-    if (
-      updated.bedrooms &&
-      updated.location &&
-      updated.type
-    ) {
+    if (updated.bedrooms && updated.location && updated.type) {
       updated.title = `${updated.bedrooms}BHK ${updated.type} in ${updated.location}`;
     }
 
@@ -122,15 +118,12 @@ const token = localStorage.getItem("token");
             area: Number(updated.area),
             bedrooms: Number(updated.bedrooms),
             bathrooms: Number(updated.bathrooms),
-          }
+          },
         );
 
         setForm((prev) => ({
           ...prev,
-          price:
-            res.data.price ||
-            res.data.predicted_price ||
-            "",
+          price: res.data.price || res.data.predicted_price || "",
         }));
       } catch (err) {
         console.log(err);
@@ -138,11 +131,9 @@ const token = localStorage.getItem("token");
     }
   };
 
-
   const handleImage = (e) => {
     setImage(e.target.files[0]);
   };
-
 
   const handleSubmit = async () => {
     try {
@@ -167,13 +158,13 @@ const token = localStorage.getItem("token");
         await axios.put(
           `https://real-estate-dhap.onrender.com/api/properties/edit/${editingProperty._id}`,
           data,
-          config
+          config,
         );
       } else {
         await axios.post(
           "https://real-estate-dhap.onrender.com/api/properties",
           data,
-          config
+          config,
         );
       }
 
@@ -194,33 +185,28 @@ const token = localStorage.getItem("token");
 
       // Refresh properties
       fetchAll();
-
     } catch (err) {
       console.log(err);
     }
   };
-
 
   const deleteProperty = async (id) => {
     try {
       await axios.delete(
-        `https://real-estate-dhap.onrender.com/api/properties/delete/${id}`
+        `https://real-estate-dhap.onrender.com/api/properties/delete/${id}`,
       );
 
       fetchAll();
-
     } catch (err) {
       console.log(err);
     }
   };
-
 
   const editProperty = (p) => {
     setEditingProperty(p);
     setForm(p);
     setTab(1);
   };
-
 
   const deleteUser = async (id) => {
     try {
@@ -230,11 +216,10 @@ const token = localStorage.getItem("token");
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       fetchAll();
-
     } catch (err) {
       console.log(err);
     }
@@ -318,51 +303,33 @@ const token = localStorage.getItem("token");
           gap: 1,
         }}
       >
-        {["All Properties", "Add Property", "Users"].map(
-          (item, index) => (
-            <Button
-              key={index}
-              onClick={() => setTab(index)}
-              sx={{
-                px: 2.5,
-                py: 1,
-                borderRadius: "12px",
-                fontWeight: 700,
-                textTransform: "none",
-                fontSize: "0.9rem",
-                bgcolor:
-                  tab === index
-                    ? "#111827"
-                    : "transparent",
-                color:
-                  tab === index
-                    ? "white"
-                    : "#6b7280",
-                "&:hover": {
-                  bgcolor:
-                    tab === index
-                      ? "#111827"
-                      : "#f3f4f6",
-                },
-              }}
-            >
-              {item}
-            </Button>
-          )
-        )}
+        {["All Properties", "Add Property", "Users"].map((item, index) => (
+          <Button
+            key={index}
+            onClick={() => setTab(index)}
+            sx={{
+              px: 2.5,
+              py: 1,
+              borderRadius: "12px",
+              fontWeight: 700,
+              textTransform: "none",
+              fontSize: "0.9rem",
+              bgcolor: tab === index ? "#111827" : "transparent",
+              color: tab === index ? "white" : "#6b7280",
+              "&:hover": {
+                bgcolor: tab === index ? "#111827" : "#f3f4f6",
+              },
+            }}
+          >
+            {item}
+          </Button>
+        ))}
       </Box>
 
       {tab === 0 && (
         <Grid container spacing={2.5}>
           {properties.map((p) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              key={p._id}
-            >
+            <Grid item xs={12} sm={6} md={4} lg={3} key={p._id}>
               <Card
                 sx={{
                   borderRadius: "22px",
@@ -373,8 +340,7 @@ const token = localStorage.getItem("token");
                   transition: "0.3s",
                   "&:hover": {
                     transform: "translateY(-4px)",
-                    boxShadow:
-                      "0 18px 40px rgba(0,0,0,0.05)",
+                    boxShadow: "0 18px 40px rgba(0,0,0,0.05)",
                   },
                 }}
               >
@@ -414,10 +380,7 @@ const token = localStorage.getItem("token");
                       mb: 2,
                     }}
                   >
-                    ₹
-                    {Number(p.price).toLocaleString(
-                      "en-IN"
-                    )}
+                    ₹{Number(p.price).toLocaleString("en-IN")}
                   </Typography>
 
                   <Stack
@@ -427,16 +390,11 @@ const token = localStorage.getItem("token");
                       bgcolor: "#f9fafb",
                       borderRadius: "14px",
                       p: 1,
-                      justifyContent:
-                        "space-between",
+                      justifyContent: "space-between",
                       mb: 2,
                     }}
                   >
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      alignItems="center"
-                    >
+                    <Stack direction="row" spacing={0.5} alignItems="center">
                       <KingBedIcon
                         sx={{
                           fontSize: 16,
@@ -454,11 +412,7 @@ const token = localStorage.getItem("token");
                       </Typography>
                     </Stack>
 
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      alignItems="center"
-                    >
+                    <Stack direction="row" spacing={0.5} alignItems="center">
                       <BathtubIcon
                         sx={{
                           fontSize: 16,
@@ -476,11 +430,7 @@ const token = localStorage.getItem("token");
                       </Typography>
                     </Stack>
 
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      alignItems="center"
-                    >
+                    <Stack direction="row" spacing={0.5} alignItems="center">
                       <SquareFootIcon
                         sx={{
                           fontSize: 16,
@@ -499,16 +449,11 @@ const token = localStorage.getItem("token");
                     </Stack>
                   </Stack>
 
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                  >
+                  <Stack direction="row" spacing={1}>
                     <Button
                       fullWidth
                       startIcon={<EditIcon />}
-                      onClick={() =>
-                        editProperty(p)
-                      }
+                      onClick={() => editProperty(p)}
                       sx={{
                         bgcolor: "#111827",
                         color: "white",
@@ -527,9 +472,7 @@ const token = localStorage.getItem("token");
                     </Button>
 
                     <IconButton
-                      onClick={() =>
-                        deleteProperty(p._id)
-                      }
+                      onClick={() => deleteProperty(p._id)}
                       sx={{
                         bgcolor: "#f3f4f6",
                         color: "#ef4444",
@@ -574,9 +517,7 @@ const token = localStorage.getItem("token");
               mb: 4,
             }}
           >
-            {editingProperty
-              ? "Edit Property"
-              : "Add Property"}
+            {editingProperty ? "Edit Property" : "Add Property"}
           </Typography>
 
           <Grid container spacing={2.5}>
@@ -647,17 +588,11 @@ const token = localStorage.getItem("token");
                 value={form.type}
                 onChange={handleChange}
               >
-                <MenuItem value="Apartment">
-                  Apartment
-                </MenuItem>
+                <MenuItem value="Apartment">Apartment</MenuItem>
 
-                <MenuItem value="Villa">
-                  Villa
-                </MenuItem>
+                <MenuItem value="Villa">Villa</MenuItem>
 
-                <MenuItem value="Flat">
-                  Flat
-                </MenuItem>
+                <MenuItem value="Flat">Flat</MenuItem>
               </TextField>
             </Grid>
 
@@ -665,12 +600,9 @@ const token = localStorage.getItem("token");
               <Button
                 component="label"
                 fullWidth
-                startIcon={
-                  <CloudUploadOutlinedIcon />
-                }
+                startIcon={<CloudUploadOutlinedIcon />}
                 sx={{
-                  border:
-                    "1px dashed #d1d5db",
+                  border: "1px dashed #d1d5db",
                   color: "#6b7280",
                   borderRadius: "16px",
                   py: 1.7,
@@ -678,15 +610,9 @@ const token = localStorage.getItem("token");
                   fontWeight: 700,
                 }}
               >
-                {image
-                  ? image.name
-                  : "Upload Property Image"}
+                {image ? image.name : "Upload Property Image"}
 
-                <input
-                  hidden
-                  type="file"
-                  onChange={handleImage}
-                />
+                <input hidden type="file" onChange={handleImage} />
               </Button>
             </Grid>
           </Grid>
@@ -710,103 +636,109 @@ const token = localStorage.getItem("token");
               },
             }}
           >
-            {editingProperty
-              ? "Update Property"
-              : "Add Property"}
+            {editingProperty ? "Update Property" : "Add Property"}
           </Button>
         </Paper>
       )}
 
       {tab === 2 && (
-        <Grid container spacing={2.5}>
-          {users.map((u) => (
-            <Grid
-              item
-              xs={12}
-              md={6}
-              lg={4}
-              key={u._id}
+  <Grid container spacing={2.5}>
+    {users.map((u) => (
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+        key={u._id}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: "22px",
+            p: 2.5,
+            border: "1px solid #ececec",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            bgcolor: "white",
+          }}
+        >
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+          >
+            <Box
+              sx={{
+                width: 52,
+                height: 52,
+                borderRadius: "16px",
+                bgcolor: "#f3f4f6",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <Paper
-                elevation={0}
+              <PersonOutlineOutlinedIcon
                 sx={{
-                  borderRadius: "22px",
-                  p: 2.5,
-                  border: "1px solid #ececec",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent:
-                    "space-between",
+                  color: "#111827",
+                }}
+              />
+            </Box>
+
+            <Box>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  color: "#111827",
+                  fontSize: "0.98rem",
                 }}
               >
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                >
-                  <Box
-                    sx={{
-                      width: 52,
-                      height: 52,
-                      borderRadius: "16px",
-                      bgcolor: "#f3f4f6",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent:
-                        "center",
-                    }}
-                  >
-                    <PersonOutlineOutlinedIcon
-                      sx={{
-                        color: "#111827",
-                      }}
-                    />
-                  </Box>
+                {u.name}
+              </Typography>
 
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontWeight: 800,
-                        color: "#111827",
-                        fontSize: "0.98rem",
-                      }}
-                    >
-                      {u.name}
-                    </Typography>
+              <Typography
+                sx={{
+                  color: "#6b7280",
+                  fontSize: "0.88rem",
+                }}
+              >
+                {u.email}
+              </Typography>
 
-                    <Typography
-                      sx={{
-                        color: "#6b7280",
-                        fontSize: "0.88rem",
-                      }}
-                    >
-                      {u.email}
-                    </Typography>
-                  </Box>
-                </Stack>
+              <Typography
+                sx={{
+                  color: "#2563eb",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  mt: 0.5,
+                }}
+              >
+                {u.role}
+              </Typography>
+            </Box>
+          </Stack>
 
-                <IconButton
-                  onClick={() =>
-                    deleteUser(u._id)
-                  }
-                  sx={{
-                    bgcolor: "#f3f4f6",
-                    color: "#ef4444",
-                    width: 44,
-                    height: 44,
-                    borderRadius: "14px",
-                    "&:hover": {
-                      bgcolor: "#fee2e2",
-                    },
-                  }}
-                >
-                  <DeleteSweepIcon />
-                </IconButton>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      )}
+          <IconButton
+            onClick={() => deleteUser(u._id)}
+            sx={{
+              bgcolor: "#f3f4f6",
+              color: "#ef4444",
+              width: 44,
+              height: 44,
+              borderRadius: "14px",
+              "&:hover": {
+                bgcolor: "#fee2e2",
+              },
+            }}
+          >
+            <DeleteSweepIcon />
+          </IconButton>
+        </Paper>
+      </Grid>
+    ))}
+  </Grid>
+)}
     </Box>
   );
 };

@@ -439,7 +439,7 @@ const PropertyDetails = () => {
 
       <div className="h-16" />
     </div>
-    <Footer/>
+    <Footer />
   </>
   );
 };
