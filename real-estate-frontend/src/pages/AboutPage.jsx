@@ -121,10 +121,6 @@ const AboutPage = () => {
               <button onClick={() => navigate("/properties")} className="bg-[#111827] text-white px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition duration-300 shadow-lg">
                 Explore Properties
               </button>
-
-              <button className="bg-white border border-gray-200 text-[#111827] px-8 py-4 rounded-2xl font-semibold hover:bg-gray-50 transition duration-300">
-                Learn More
-              </button>
             </div>
           </motion.div>
         </div>

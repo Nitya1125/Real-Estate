@@ -31,6 +31,7 @@ const CTA = () => {
         <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center">
 
           <motion.button
+          onClick={() => navigate("/properties")}
             whileHover={{ scale: 1.05 }}
             className="bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
           >

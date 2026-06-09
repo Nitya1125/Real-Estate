@@ -53,7 +53,7 @@ useEffect(() => {
     try {
 
       const response = await fetch(
-        "https://real-estate-dhap.onrender.com/api/properties/visit/request",
+        `https://real-estate-dhap.onrender.com/api/properties/visit/request/${id}`,
         {
           method: "POST",
 
