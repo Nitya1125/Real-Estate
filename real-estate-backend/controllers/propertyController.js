@@ -32,6 +32,7 @@ const addProperty = async (req, res) => {
     });
   }
 };
+
 const getAllProperties = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -120,6 +121,7 @@ const SearchFilter = async (req, res) => {
     data,
   });
 };
+
 const editProperty = async (req, res) => {
   try{
     const image = req.file ? req.file.filename: null;
