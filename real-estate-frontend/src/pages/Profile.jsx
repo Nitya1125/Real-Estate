@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -48,18 +49,10 @@ const ProfilePage = () => {
     : "U";
 
   return (
+    <>
     <div className="min-h-screen bg-[#f6f7fb] text-slate-900 font-sans antialiased">
-      <nav className="max-w-6xl mx-auto px-6 py-8 flex items-center">
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-3 bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md px-6 py-4 rounded-2xl text-base font-bold text-[#111827] transition-all duration-300"
-        >
-          <ChevronLeft size={22} />
-          Back to Dashboard
-        </button>
-      </nav>
-
-      <main className="max-w-6xl mx-auto px-6 pb-16">
+      <Navbar />
+      <main className="max-w-6xl mx-auto px-6 pb-16 mt-48">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
             <div className="bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center text-center">
@@ -201,6 +194,7 @@ const ProfilePage = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 
