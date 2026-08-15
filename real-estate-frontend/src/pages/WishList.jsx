@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import { API_BASE, uploadsUrl } from "../config/api";
 
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -6,13 +8,13 @@ const WishlistPage = () => {
   const fetchWishlist = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("https://real-estate-dhap.onrender.com/api/users/wishlist", {
+      const response = await fetch(`${API_BASE}/api/users/wishlist`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
-      setWishlist(data);
+      setWishlist(Array.isArray(data) ? data : []);
     } catch (error) {
       console.log(error);
     }
@@ -24,9 +26,10 @@ const WishlistPage = () => {
 
   return (
     <div className="min-h-screen bg-stone-50 text-neutral-900">
+      <Navbar />
 
       {/* Header */}
-      <div className="px-6 md:px-16 pt-10 pb-7 border-b border-stone-200 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div className="px-6 md:px-16 pt-28 pb-7 border-b border-stone-200 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
 
           {/* Back to Profile Button */}
@@ -94,7 +97,7 @@ const WishlistPage = () => {
                 {/* Image */}
                 <div className="relative overflow-hidden">
                   <img
-                    src={`https://real-estate-dhap.onrender.com/uploads/${property.image}`}
+                    src={uploadsUrl(property.image)}
                     alt={property.title}
                     className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
                   />

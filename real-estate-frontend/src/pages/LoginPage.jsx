@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
+import { API_BASE } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const VILLA_URL =
   "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=1400&fit=crop&auto=format";
@@ -14,8 +16,10 @@ const LoginPage = () => {
     password: "",
   });
 
+  const { success, error } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -24,27 +28,35 @@ const LoginPage = () => {
     });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e?.preventDefault?.();
+    if (!formData.email || !formData.password) {
+      error("Please enter your email and password.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const res = await axios.post(
-        "https://real-estate-dhap.onrender.com/api/auth/login",
+        `${API_BASE}/api/auth/login`,
         formData,
         { withCredentials: true }
       );
 
       if (res.data.message === "User Not Found") {
-        alert("User Not Found");
+        error("No account found with that email.");
         return;
       }
 
       if (res.data.message === "Invalid Credential") {
-        alert("Wrong Password");
+        error("Wrong password. Please try again.");
         return;
       }
 
       if (res.data.message === "Login Successfully") {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+        success("Welcome back.");
 
         if (res.data.user.role === "admin") {
           navigate("/admin");
@@ -52,9 +64,11 @@ const LoginPage = () => {
           navigate("/dashboard");
         }
       }
-    } catch (error) {
-      console.log(error);
-      alert("Login error");
+    } catch (err) {
+      console.log(err);
+      error("Unable to sign in. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -154,8 +168,9 @@ const LoginPage = () => {
           </div>
 
           {/* Auth card */}
-          <div
-            className="rounded-3xl p-7"
+          <form
+            onSubmit={handleLogin}
+            className="rounded-3xl p-5 sm:p-7"
             style={{
               background: "rgba(255,255,255,0.72)",
               backdropFilter: "blur(24px)",
@@ -250,14 +265,15 @@ const LoginPage = () => {
 
             {/* Continue button */}
             <button
-              onClick={handleLogin}
-              className="relative w-full py-3.5 rounded-[14px] text-white text-[14px] font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.985] transition-transform"
+              type="submit"
+              disabled={submitting}
+              className="relative w-full py-3.5 rounded-[14px] text-white text-[14px] font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.985] transition-transform disabled:opacity-70"
               style={{
                 background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
                 boxShadow: "0 4px 20px rgba(37,99,235,0.3)",
               }}
             >
-              Continue
+              {submitting ? "Signing in..." : "Continue"}
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
@@ -279,12 +295,13 @@ const LoginPage = () => {
                 onSuccess={async (credentialResponse) => {
                   try {
                     const res = await axios.post(
-                      "https://real-estate-dhap.onrender.com/api/auth/google",
+                      `${API_BASE}/api/auth/google`,
                       { token: credentialResponse.credential }
                     );
 
                     localStorage.setItem("token", res.data.token);
                     localStorage.setItem("user", JSON.stringify(res.data.user));
+                    success("Signed in with Google.");
 
                     if (res.data.user.role === "admin") {
                       navigate("/admin");
@@ -293,11 +310,11 @@ const LoginPage = () => {
                     }
                   } catch (err) {
                     console.log(err);
-                    alert("Google Login error");
+                    error("Google sign-in failed.");
                   }
                 }}
                 onError={() => {
-                  console.log("Google Login Failed");
+                  error("Google sign-in failed.");
                 }}
               />
             </div>
@@ -308,7 +325,7 @@ const LoginPage = () => {
                 Create one
               </Link>
             </p>
-          </div>
+          </form>
         </div>
       </div>
 

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
 
+  const { success, error } = useToast();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,7 +18,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "https://real-estate-dhap.onrender.com/api/auth/forgot-password",
+        `${API_BASE}/api/auth/forgot-password`,
         {
           method: "POST",
           headers: {
@@ -29,12 +32,15 @@ const ForgotPassword = () => {
 
       if (response.ok) {
         setMessage("Reset link sent to your email");
+        success("Reset link sent to your email.");
       } else {
         setMessage(data.message);
+        error(data.message || "Could not send reset link.");
       }
     } catch (err) {
       console.log(err);
       setMessage("Server error");
+      error("Server error. Please try again.");
     }
 
     setLoading(false);

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const ResetPassword = () => {
 
   const { token } = useParams();
   const navigate = useNavigate();
 
+  const { success, error } = useToast();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -20,7 +23,7 @@ const ResetPassword = () => {
     try {
 
       const response = await fetch(
-        `https://real-estate-dhap.onrender.com/api/auth/reset-password/${token}`,
+        `${API_BASE}/api/auth/reset-password/${token}`,
         {
           method: "PATCH",
           headers: {
@@ -35,6 +38,7 @@ const ResetPassword = () => {
       if (response.ok) {
 
         setMessage("Password reset successful");
+        success("Password reset successful.");
 
         setTimeout(() => {
           navigate("/");
@@ -42,11 +46,13 @@ const ResetPassword = () => {
 
       } else {
         setMessage(data.message);
+        error(data.message || "Could not reset password.");
       }
 
     } catch (err) {
       console.log(err);
       setMessage("Server error");
+      error("Server error. Please try again.");
     }
   };
 

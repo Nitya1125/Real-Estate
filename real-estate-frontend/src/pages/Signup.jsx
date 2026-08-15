@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { API_BASE } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const VILLA_URL =
   "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=1400&fit=crop&auto=format";
@@ -15,7 +17,9 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { success, error } = useToast();
 
   const handleChange = (e) => {
     setFormData({
@@ -27,23 +31,37 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.name || !formData.email || !formData.password) {
+      error("Please fill in all fields.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      error("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (formData.password !== confirmPassword) {
+      error("Passwords do not match.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      const res = await axios.post(
-        "https://real-estate-dhap.onrender.com/api/auth/signup",
-        formData
-      );
+      const res = await axios.post(`${API_BASE}/api/auth/signup`, formData);
 
       if (res.data.message === "User Already Exists") {
-        alert("User Already Exists");
+        error("An account with this email already exists.");
         return;
-      } else {
-        alert("Signup Successful");
       }
 
+      success("Account created. You can sign in now.");
       navigate("/");
-    } catch (error) {
-      console.log(error);
-      alert("Signup error");
+    } catch (err) {
+      console.log(err);
+      error("Signup failed. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -280,13 +298,14 @@ const Signup = () => {
             {/* Create Account button */}
             <button
               type="submit"
-              className="relative w-full py-3.5 rounded-[14px] text-white text-[14px] font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.985] transition-transform"
+              disabled={submitting}
+              className="relative w-full py-3.5 rounded-[14px] text-white text-[14px] font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.985] transition-transform disabled:opacity-70"
               style={{
                 background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
                 boxShadow: "0 4px 20px rgba(37,99,235,0.3)",
               }}
             >
-              Create Account
+              {submitting ? "Creating account..." : "Create Account"}
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>

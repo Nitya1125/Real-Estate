@@ -1,8 +1,10 @@
   import React, { useState } from "react";
   import { motion } from "framer-motion";
   import Navbar from "../components/Navbar";
+  import Footer from "../components/Footer";
   import { Mail, Phone, MapPin } from "lucide-react";
-import Footer from "../components/Footer";
+import { API_BASE } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
   const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,8 @@ import Footer from "../components/Footer";
     message: ""
   })
 
+  const { success, error } = useToast();
+
   const handleChange =  (e) =>{
     setFormData({
       ...formData,
@@ -24,7 +28,7 @@ import Footer from "../components/Footer";
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-      const res = await fetch('https://real-estate-dhap.onrender.com/api/contact', {
+      const res = await fetch(`${API_BASE}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -34,7 +38,7 @@ import Footer from "../components/Footer";
       const data = await res.json();
 
       if(data.success){
-        alert("Message Sent Successfully");
+        success("Message sent successfully.");
         setFormData({
           First_name: "",
           Last_name: "",
@@ -44,11 +48,11 @@ import Footer from "../components/Footer";
           message: ""
         });
       }else{
-        alert(data.message);
+        error(data.message || "Could not send message.");
       }
     }catch(err){
       console.log(err);
-      alert("Something Went Wrong");
+      error("Something went wrong.");
     }
   }
     return (
@@ -57,7 +61,7 @@ import Footer from "../components/Footer";
 
         <Navbar />
 
-        <div className="max-w-[1600px] mx-auto px-6 md:px-10 pt-32 pb-20">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-10 pt-32 pb-20">
 
           <div className="grid md:grid-cols-2 gap-16 items-start">
 

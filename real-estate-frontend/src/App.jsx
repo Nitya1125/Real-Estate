@@ -10,67 +10,113 @@ import AdminDashboard from "./pages/AdminDashboard";
 import PropertyDetails from "./pages/PropertyDetails";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
+import AdminRoute from "./components/AdminRoute";
 import Profile from "./pages/Profile";
 import WishList from "./pages/WishList";
 import RequestPropertyView from "./pages/RequestPropertyView";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPage";
+import { ToastProvider } from "./context/ToastContext";
 
 function App() {
   const [loading, setLoading] = useState(true);
 
-  // Splash screen
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
+    const timer = setTimeout(() => setLoading(false), 1600);
     return () => clearTimeout(timer);
   }, []);
-
-  // SAFE USER PARSING
-  let user = null;
-
-  try {
-    const storedUser = localStorage.getItem("user");
-    user = storedUser ? JSON.parse(storedUser) : null;
-  } catch (error) {
-    console.log("Invalid user data",error);
-    user = null;
-  }
 
   if (loading) return <Splashscreen />;
 
   return (
     <div className="overflow-x-hidden">
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage/>}/>
-        <Route path="/forgot-password" element={<ForgotPassword /> }/>
-        <Route path="/reset-password/:token" element={<ResetPassword/>} />
-        <Route path="/dashboard" element={<ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
-        <Route path="/Properties" element={<ProtectedRoutes> <PropertiesPage /> </ProtectedRoutes>} />
-        <Route path="/properties/:id" element={<ProtectedRoutes><PropertyDetails /></ProtectedRoutes>} />
-        <Route path = "/request/visit/:id" element={<ProtectedRoutes><RequestPropertyView /></ProtectedRoutes>}/>
-        <Route path="/about" element={<ProtectedRoutes><AboutPage /></ProtectedRoutes>} />
-        <Route path="/contact" element={<ProtectedRoutes><ContactPage /></ProtectedRoutes>} />
-        <Route path="/profile" element={<ProtectedRoutes><Profile /></ProtectedRoutes>} />
-        <Route path ="/wishlist" element={<ProtectedRoutes><WishList/></ProtectedRoutes>}/>
-        <Route path="/signup" element={<Signup />} />
-
-        {/* Protected Admin Route */}
-        <Route
-          path="/admin"
-          element={
-            user?.role === "admin" ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <ToastProvider>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoutes>
+                  <Dashboard />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/properties"
+              element={
+                <ProtectedRoutes>
+                  <PropertiesPage />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/Properties"
+              element={<Navigate to="/properties" replace />}
+            />
+            <Route
+              path="/properties/:id"
+              element={
+                <ProtectedRoutes>
+                  <PropertyDetails />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/request/visit/:id"
+              element={
+                <ProtectedRoutes>
+                  <RequestPropertyView />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <ProtectedRoutes>
+                  <AboutPage />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <ProtectedRoutes>
+                  <ContactPage />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoutes>
+                  <Profile />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoutes>
+                  <WishList />
+                </ProtectedRoutes>
+              }
+            />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ToastProvider>
+      </BrowserRouter>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
+import { API_BASE, uploadsUrl } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const RequestPropertyView = () => {
 
@@ -8,6 +10,7 @@ const RequestPropertyView = () => {
 
   const { id } = useParams();
 
+  const { success: showSuccess, error } = useToast();
   const [property, setProperty] = useState(null);
 
   const [success, setSuccess] = useState("");
@@ -24,7 +27,7 @@ const RequestPropertyView = () => {
 useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await fetch(`https://real-estate-dhap.onrender.com/api/properties/${id}`);
+        const res = await fetch(`${API_BASE}/api/properties/${id}`);
         const data = await res.json();
 
         setProperty(data.property);
@@ -53,7 +56,7 @@ useEffect(() => {
     try {
 
       const response = await fetch(
-        `https://real-estate-dhap.onrender.com/api/properties/visit/request/${id}`,
+        `${API_BASE}/api/properties/visit/request/${id}`,
         {
           method: "POST",
 
@@ -72,9 +75,8 @@ useEffect(() => {
 
       console.log(data);
 
-      setSuccess(
-        "Visit request submitted successfully!"
-      );
+      setSuccess("Visit request submitted successfully!");
+      showSuccess("Visit request submitted successfully.");
 
       setFormData({
         name: "",
@@ -85,9 +87,8 @@ useEffect(() => {
       });
 
     } catch (err) {
-
       console.log(err);
-
+      error("Could not submit visit request.");
     }
   };
 
@@ -116,7 +117,7 @@ useEffect(() => {
           <img
             src={
               property?.image
-                ? `https://real-estate-dhap.onrender.com/uploads/${property.image}`
+                ? uploadsUrl(property.image)
                 : "https://placehold.co/600x400"
             }
             alt="property"

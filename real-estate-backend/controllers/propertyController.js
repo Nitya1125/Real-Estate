@@ -72,7 +72,7 @@ const SearchFilter = async (req, res) => {
   let filter = {};
 
   if (location) {
-    filter.location = location;
+    filter.location = { $regex: location, $options: "i" };
   }
   if (district) {
     filter.district = district;
@@ -92,13 +92,12 @@ const SearchFilter = async (req, res) => {
   if (minPrice || maxPrice) {
     filter.price = {};
     if (minPrice) filter.price.$gte = Number(minPrice);
-    if (maxPrice) filter.price.$gte = Number(maxPrice);
+    if (maxPrice) filter.price.$lte = Number(maxPrice);
   }
 
   if (minArea) {
     filter.area = { $gte: Number(minArea) };
   }
-  console.log(filter);
   const { sort } = req.query;
   let sortOption = {};
   if (sort == "low") {
@@ -107,19 +106,24 @@ const SearchFilter = async (req, res) => {
     sortOption.price = -1;
   }
   const { page = 1, limit = 10 } = req.query;
-  const skip = (page - 1) * limit;
-  const data = await Property.find(filter)
-    .sort(sortOption)
-    .skip(skip)
-    .limit(Number(limit));
+  const skip = (Number(page) - 1) * Number(limit);
+  try {
+    const data = await Property.find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(Number(limit));
 
-  const total = await Property.countDocuments(filter);
-  res.json({
-    total,
-    page: Number(page),
-    limit: Number(limit),
-    data,
-  });
+    const total = await Property.countDocuments(filter);
+    res.json({
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit)) || 1,
+      data,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error searching properties" });
+  }
 };
 
 const editProperty = async (req, res) => {
@@ -141,9 +145,16 @@ const editProperty = async (req, res) => {
 };
 
 const handleDeleteByID = async (req, res) => {
-  const { id } = req.params;
-  const property = await Property.findByIdAndDelete(id);
-  res.json(property);
+  try {
+    const { id } = req.params;
+    const property = await Property.findByIdAndDelete(id);
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+    res.json(property);
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting Property" });
+  }
 };
 
 module.exports = {

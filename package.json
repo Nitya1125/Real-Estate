@@ -1,6 +1,10 @@
 {
-  "dependencies": {
-    "axios": "^1.18.1",
-    "framer-motion": "^12.38.0"
+  "name": "homeverse",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix real-estate-frontend",
+    "dev:backend": "npm run dev --prefix real-estate-backend",
+    "build": "npm run build --prefix real-estate-frontend",
+    "start": "npm start --prefix real-estate-backend"
   }
 }

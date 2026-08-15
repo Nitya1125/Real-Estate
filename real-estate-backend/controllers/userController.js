@@ -72,7 +72,7 @@ async function getWishlist(req,res){
 async function getCurrentUser(req,res){
     try{
         const userId = req.user.id;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select("-password -resetToken");
         if(!user) {
             return res.status(404).json({ message: "Error getting current user" });
         }

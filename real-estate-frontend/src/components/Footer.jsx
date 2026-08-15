@@ -37,7 +37,7 @@ const Footer = () => {
             
             <div className="flex items-center gap-3">
               <Mail size={18} />
-              <span>nityagandhi1125@gmail.com</span>
+              <span className="break-all">nityagandhi1125@gmail.com</span>
             </div>
 
             <div className="flex items-center gap-3">

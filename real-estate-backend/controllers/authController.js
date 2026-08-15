@@ -18,15 +18,14 @@ async function handleUserSignup(req, res) {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
     });
-    console.log("User Saved:", user);
     res.json({
       success: true,
-      data: user,
+      message: "Signup Successful",
     });
   } catch (error) {
     console.log(error);
@@ -57,16 +56,20 @@ async function handleUserLogin(req, res) {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
     });
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    delete safeUser.resetToken;
     res.json({
       success: true,
       message: "Login Successfully",
       token,
-      user,
+      user: safeUser,
     });
   } catch (error) {
     res.status(500).json({
@@ -101,10 +104,14 @@ async function handleGoogleLogin(req, res) {
       expiresIn: "7d",
     });
 
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    delete safeUser.resetToken;
+
     return res.json({
       success: true,
       token: jwtToken,
-      user,
+      user: safeUser,
     });
   } catch (err) {
     res.status(500).json({

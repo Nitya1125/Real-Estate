@@ -24,10 +24,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import { API_BASE, uploadsUrl } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
 
+  const { success, error } = useToast();
   const [tab, setTab] = useState(0);
   const [users, setUsers] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -47,7 +50,7 @@ const AdminDashboard = () => {
   const fetchAll = async () => {
     try {
       const usersRes = await axios.get(
-        "https://real-estate-dhap.onrender.com/api/users",
+        `${API_BASE}/api/users`,
 
         {
           headers: {
@@ -57,7 +60,7 @@ const AdminDashboard = () => {
       );
 
       const propRes = await axios.get(
-        "https://real-estate-dhap.onrender.com/api/properties?page=1&limit=1000",
+        `${API_BASE}/api/properties?page=1&limit=1000`,
       );
       console.log(usersRes.data);
 
@@ -110,7 +113,7 @@ const AdminDashboard = () => {
     ) {
       try {
         const res = await axios.post(
-          "https://real-estate-dhap.onrender.com/api/predict-price",
+          `${API_BASE}/api/predict-price`,
           {
             district: updated.location,
             property_type: updated.type,
@@ -156,13 +159,13 @@ const AdminDashboard = () => {
 
       if (editingProperty) {
         await axios.put(
-          `https://real-estate-dhap.onrender.com/api/properties/edit/${editingProperty._id}`,
+          `${API_BASE}/api/properties/edit/${editingProperty._id}`,
           data,
           config,
         );
       } else {
         await axios.post(
-          "https://real-estate-dhap.onrender.com/api/properties",
+          `${API_BASE}/api/properties`,
           data,
           config,
         );
@@ -182,27 +185,26 @@ const AdminDashboard = () => {
       setImage(null);
       setEditingProperty(null);
       setTab(0);
-
-      // Refresh properties
+      success(editingProperty ? "Property updated." : "Property added.");
       fetchAll();
     } catch (err) {
       console.log(err);
+      error("Could not save property.");
     }
   };
 
   const deleteProperty = async (id) => {
     try {
       await axios.delete(
-        `https://real-estate-dhap.onrender.com/api/properties/delete/${id}`,
+        `${API_BASE}/api/properties/delete/${id}`,
       );
 
       fetchAll();
+      success("Property deleted.");
     } catch (err) {
       console.log(err);
+      error("Could not delete property.");
     }
-  };
-
-  const editProperty = (p) => {
     setEditingProperty(p);
     setForm(p);
     setTab(1);
@@ -211,7 +213,7 @@ const AdminDashboard = () => {
   const deleteUser = async (id) => {
     try {
       await axios.delete(
-        `https://real-estate-dhap.onrender.com/api/users/${id}`,
+        `${API_BASE}/api/users/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -220,12 +222,12 @@ const AdminDashboard = () => {
       );
 
       fetchAll();
+      success("User removed.");
     } catch (err) {
       console.log(err);
+      error("Could not delete user.");
     }
-  };
-
-  return (
+    return (
     <Box
       sx={{
         minHeight: "100vh",
@@ -349,7 +351,7 @@ const AdminDashboard = () => {
                   height="180"
                   image={
                     p.image
-                      ? `https://real-estate-dhap.onrender.com/uploads/${p.image}`
+                      ? uploadsUrl(p.image)
                       : "https://placehold.co/600x400"
                   }
                 />
@@ -741,6 +743,7 @@ const AdminDashboard = () => {
 )}
     </Box>
   );
+}
 };
 
 export default AdminDashboard;

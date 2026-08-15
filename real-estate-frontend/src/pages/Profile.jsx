@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { API_BASE } from "../config/api";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -22,7 +23,7 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "https://real-estate-dhap.onrender.com/api/users/me",
+          `${API_BASE}/api/users/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -50,150 +51,188 @@ const ProfilePage = () => {
 
   return (
     <>
-    <div className="min-h-screen bg-[#f6f7fb] text-slate-900 font-sans antialiased">
-      <Navbar />
-      <main className="max-w-6xl mx-auto px-6 pb-16 mt-48">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <div className="bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.05)] flex flex-col items-center text-center">
-              <div className="relative">
-                <div className="w-36 h-36 rounded-full bg-gradient-to-br from-[#111827] to-[#1f2937] text-white flex items-center justify-center text-5xl font-black shadow-[0_15px_40px_rgba(0,0,0,0.18)]">
-                  {firstLetter}
-                </div>
+      <div className="relative min-h-screen overflow-hidden text-slate-900 font-sans antialiased" style={{ background: "#f4f6fc" }}>
+        {/* ── Soft brand orbs ── */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 650,
+              height: 650,
+              left: "-12%",
+              top: "-18%",
+              background: "radial-gradient(circle, rgba(199,214,255,0.45) 0%, transparent 70%)",
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              width: 500,
+              height: 500,
+              right: "-8%",
+              top: "10%",
+              background: "radial-gradient(circle, rgba(186,230,255,0.35) 0%, transparent 70%)",
+            }}
+          />
+        </div>
 
-                <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+        <div className="relative z-10">
+          <Navbar />
+
+          <main className="max-w-6xl mx-auto px-6 pb-16 mt-48">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* ── Profile card ── */}
+              <div className="lg:col-span-1">
+                <div
+                  className="rounded-[32px] p-8 flex flex-col items-center text-center"
+                  style={{
+                    background: "rgba(255,255,255,0.8)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.9)",
+                    boxShadow: "0 10px 50px rgba(15,23,42,0.06)",
+                  }}
+                >
+                  <div className="relative">
+                    <div
+                      className="w-36 h-36 rounded-full text-white flex items-center justify-center text-5xl font-bold shadow-[0_15px_40px_rgba(37,99,235,0.3)]"
+                      style={{ background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)" }}
+                    >
+                      {firstLetter}
+                    </div>
+
+                    <div className="absolute bottom-2 right-2 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full" />
+                  </div>
+
+                  <h1
+                    className="text-3xl font-bold mt-7 text-slate-900"
+                    style={{ fontFamily: "Playfair Display, Georgia, serif" }}
+                  >
+                    {user?.name}
+                  </h1>
+
+                  <p className="text-slate-400 text-sm mt-1">{user?.email}</p>
+
+                  <div className="mt-5 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold tracking-wide text-blue-700 uppercase">
+                    Premium Member
+                  </div>
+
+                  <div className="w-full h-px bg-slate-100 my-8" />
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full group flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-100 hover:border-red-100"
+                  >
+                    <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    Logout Account
+                  </button>
+                </div>
               </div>
 
-              <h1 className="text-3xl font-black mt-7 text-[#111827]">
-                {user?.name}
-              </h1>
-
-              <p className="text-gray-400 text-sm mt-1">
-                {user?.email}
-              </p>
-
-              <div className="mt-5 px-4 py-2 bg-gray-100 rounded-full text-xs font-bold tracking-wide text-gray-500 uppercase">
-                Premium Member
-              </div>
-
-              <div className="w-full h-[1px] bg-gray-100 my-8"></div>
-
-              <button
-                onClick={handleLogout}
-                className="w-full group flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all border border-gray-100 hover:border-red-100"
-              >
-                <LogOut
-                  size={20}
-                  className="group-hover:-translate-x-1 transition-transform"
-                />
-
-                Logout Account
-              </button>
-            </div>
-          </div>
-
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-gray-100 rounded-[32px] shadow-[0_10px_40px_rgba(0,0,0,0.04)] overflow-hidden">
-              <div className="px-8 py-6 border-b border-gray-100">
-                <h3 className="font-black text-2xl text-[#111827]">
-                  Personal Information
-                </h3>
-              </div>
-
-              <div className="p-8 grid gap-8">
-                <div className="flex items-start gap-5">
-                  <div className="p-4 bg-gray-100 rounded-2xl text-[#111827]">
-                    <User size={22} />
+              {/* ── Right column ── */}
+              <div className="lg:col-span-2 space-y-6">
+                <div
+                  className="rounded-[32px] overflow-hidden"
+                  style={{
+                    background: "rgba(255,255,255,0.8)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.9)",
+                    boxShadow: "0 10px 50px rgba(15,23,42,0.06)",
+                  }}
+                >
+                  <div className="px-8 py-6 border-b border-slate-100">
+                    <h3 className="font-bold text-2xl text-slate-900" style={{ fontFamily: "Playfair Display, Georgia, serif" }}>
+                      Personal Information
+                    </h3>
                   </div>
 
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">
-                      Full Name
-                    </p>
+                  <div className="p-8 grid gap-8">
+                    <div className="flex items-start gap-5">
+                      <div className="p-4 bg-blue-50 rounded-2xl text-blue-600">
+                        <User size={22} />
+                      </div>
 
-                    <h2 className="text-xl font-bold text-[#111827]">
-                      {user?.name}
-                    </h2>
-                  </div>
-                </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">
+                          Full Name
+                        </p>
+                        <h2 className="text-xl font-bold text-slate-900">{user?.name}</h2>
+                      </div>
+                    </div>
 
-                <div className="flex items-start gap-5">
-                  <div className="p-4 bg-gray-100 rounded-2xl text-[#111827]">
-                    <Mail size={22} />
-                  </div>
+                    <div className="flex items-start gap-5">
+                      <div className="p-4 bg-blue-50 rounded-2xl text-blue-600">
+                        <Mail size={22} />
+                      </div>
 
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">
-                      Email Address
-                    </p>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">
+                          Email Address
+                        </p>
+                        <h2 className="text-xl font-bold text-slate-900 break-all">{user?.email}</h2>
+                      </div>
+                    </div>
 
-                    <h2 className="text-xl font-bold text-[#111827] break-all">
-                      {user?.email}
-                    </h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-start gap-5">
+                        <div className="p-4 bg-blue-50 rounded-2xl text-blue-600">
+                          <ShieldCheck size={22} />
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">
+                            Account Security
+                          </p>
+                          <h2 className="text-xl font-bold font-mono text-slate-900">
+                            {showPassword ? user?.password || "Protected" : "••••••••"}
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start gap-5">
-                    <div className="p-4 bg-gray-100 rounded-2xl text-[#111827]">
-                      <ShieldCheck size={22} />
+                <div
+                  onClick={() => navigate("/wishlist")}
+                  className="rounded-[32px] p-8 flex items-center justify-between cursor-pointer hover:-translate-y-1 transition-all duration-300 group"
+                  style={{
+                    background: "rgba(255,255,255,0.8)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.9)",
+                    boxShadow: "0 10px 50px rgba(15,23,42,0.06)",
+                  }}
+                >
+                  <div className="flex items-center gap-5">
+                    <div className="p-5 bg-blue-50 rounded-2xl text-blue-600">
+                      <Heart size={28} fill={user?.wishlist?.length > 0 ? "currentColor" : "none"} />
                     </div>
 
                     <div>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">
-                        Account Security
+                      <h3 className="text-2xl font-bold text-slate-900" style={{ fontFamily: "Playfair Display, Georgia, serif" }}>
+                        Your Wishlist
+                      </h3>
+                      <p className="text-slate-500 mt-1">
+                        {user?.wishlist?.length || 0} properties saved to your collection
                       </p>
-
-                      <h2 className="text-xl font-bold font-mono text-[#111827]">
-                        {showPassword
-                          ? user?.password || "Protected"
-                          : "••••••••"}
-                      </h2>
                     </div>
+                  </div>
+
+                  <div
+                    className="hidden sm:flex items-center justify-center w-12 h-12 rounded-2xl text-blue-600 group-hover:text-white transition-all duration-300"
+                    style={{ background: "rgba(37,99,235,0.08)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(37,99,235,0.08)")}
+                  >
+                    <ChevronLeft size={24} className="rotate-180" />
                   </div>
                 </div>
               </div>
             </div>
-
-            <div
-              onClick={() => navigate("/wishlist")}
-              className="bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.04)] flex items-center justify-between cursor-pointer hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-300 group"
-            >
-              <div className="flex items-center gap-5">
-                <div className="p-5 bg-gray-100 rounded-2xl text-[#111827]">
-                  <Heart
-                    size={28}
-                    fill={
-                      user?.wishlist?.length > 0
-                        ? "currentColor"
-                        : "none"
-                    }
-                  />
-                </div>
-
-                <div>
-                  <h3 className="text-2xl font-black text-[#111827]">
-                    Your Wishlist
-                  </h3>
-
-                  <p className="text-gray-500 mt-1">
-                    {user?.wishlist?.length || 0} properties
-                    saved to your collection
-                  </p>
-                </div>
-              </div>
-
-              <div className="hidden sm:flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-100 text-gray-500 group-hover:bg-[#111827] group-hover:text-white transition-all duration-300">
-                <ChevronLeft
-                  size={24}
-                  className="rotate-180"
-                />
-              </div>
-            </div>
-          </div>
+          </main>
         </div>
-      </main>
-    </div>
+      </div>
     </>
   );
 };

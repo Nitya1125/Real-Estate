@@ -20,7 +20,7 @@ const Hero = () => {
           className="order-2 md:order-1"
         >
           <h1
-            className="text-[48px] sm:text-[60px] md:text-[70px] 
+            className="text-[34px] sm:text-[52px] md:text-[70px] 
             font-bold leading-tight text-gray-900"
           >
             FUTURE OF <br />

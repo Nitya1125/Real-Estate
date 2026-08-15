@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import Pagination from "../components/Pagination";
+import { API_BASE, uploadsUrl } from "../config/api";
+import { useToast } from "../context/ToastContext";
 
 const PropertiesPage = () => {
   const navigate = useNavigate();
@@ -18,16 +21,19 @@ const PropertiesPage = () => {
   const [minArea, setMinArea] = useState("");
   const [propertyType, setPropertyType] = useState("");
 
+  const { error } = useToast();
+
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch(`https://real-estate-dhap.onrender.com/api/properties?page=${page}`);
+        const res = await fetch(`${API_BASE}/api/properties?page=${page}`);
         const data = await res.json();
 
         setProperties(data.properties || []);
         setTotalPages(data.totalPages || 1);
       } catch (err) {
         console.log(err);
+        error("Could not load properties.");
       }
     };
 
@@ -36,18 +42,29 @@ const PropertiesPage = () => {
 
   const handleSearch = async () => {
     try {
-      const res = await fetch(
-        `https://real-estate-dhap.onrender.com/api/properties/search?location=${searchlocation}&bedrooms=${bedrooms}&bathrooms=${bathrooms}&minPrice=${minPrice}&maxPrice=${maxPrice}&minArea=${minArea}&property_type=${propertyType}`
-      );
+      const params = new URLSearchParams({
+        location: searchlocation,
+        bedrooms,
+        bathrooms,
+        minPrice,
+        maxPrice,
+        minArea,
+        property_type: propertyType,
+        page: "1",
+      });
 
+      const res = await fetch(`${API_BASE}/api/properties/search?${params.toString()}`);
       const data = await res.json();
-      setProperties(data.data);
+      setPage(1);
+      setProperties(data.data || []);
+      setTotalPages(data.totalPages || 1);
     } catch (err) {
       console.log(err);
+      error("Search failed. Please try again.");
     }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     setSearchLocation("");
     setBedrooms("");
     setBathrooms("");
@@ -55,11 +72,26 @@ const PropertiesPage = () => {
     setMaxPrice("");
     setMinArea("");
     setPropertyType("");
-    window.location.reload();
+    setPage(1);
+    try {
+      const res = await fetch(`${API_BASE}/api/properties?page=1`);
+      const data = await res.json();
+      setProperties(data.properties || []);
+      setTotalPages(data.totalPages || 1);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const inputClass =
-    "w-full bg-slate-50/60 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 px-4 py-3 rounded-2xl outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:bg-white transition-all duration-200";
+  const fieldInputClass =
+    "w-full bg-white border border-slate-200 text-sm text-slate-700 placeholder-slate-400 pl-10 pr-3 py-2.5 rounded-xl outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200";
+
+  const propertyTypes = [
+    { value: "", label: "All Types" },
+    { value: "House", label: "House" },
+    { value: "Apartment", label: "Apartment" },
+    { value: "Villa", label: "Villa" },
+  ];
 
   return (
     <>
@@ -91,7 +123,7 @@ const PropertiesPage = () => {
         <div className="relative z-10">
           <Navbar />
 
-          <div className="max-w-[1400px] mx-auto px-6 md:px-10 pt-28 pb-24">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 pt-28 pb-16 sm:pb-24">
             <motion.div
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
@@ -117,122 +149,175 @@ const PropertiesPage = () => {
               </p>
             </motion.div>
 
-            {/* ── Filter card ── */}
+            {/* ── Redesigned filter card ── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="rounded-[32px] p-6 mb-12"
+              className="rounded-[28px] p-5 sm:p-6 md:p-7 mb-12"
               style={{
-                background: "rgba(255,255,255,0.85)",
+                background: "rgba(255,255,255,0.9)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
                 border: "1px solid rgba(255,255,255,0.9)",
                 boxShadow: "0 10px 50px rgba(15,23,42,0.06)",
               }}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-4">
-                <div className="lg:col-span-2 relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-                      <circle cx="12" cy="9" r="2.5" />
-                    </svg>
-                  </span>
+              {/* Section label */}
+              <div className="flex items-center gap-2 mb-5">
+                <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Refine Your Search
+                </span>
+              </div>
 
-                  <input
-                    type="text"
-                    placeholder="Location"
-                    className={`${inputClass} pl-11`}
-                    value={searchlocation}
-                    onChange={(e) => setSearchLocation(e.target.value)}
-                  />
+              {/* Location — prominent standalone bar */}
+              <div className="relative mb-5">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search by city, neighborhood, or address..."
+                  className="w-full bg-slate-50/70 border border-slate-200 text-[15px] text-slate-800 placeholder-slate-400 pl-12 pr-4 py-3.5 rounded-2xl outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 focus:bg-white transition-all duration-200"
+                  value={searchlocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
+                />
+              </div>
+
+              {/* Property type — pill toggle instead of a plain dropdown */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {propertyTypes.map((t) => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => setPropertyType(t.value)}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 ${
+                      propertyType === t.value
+                        ? "text-white border-transparent"
+                        : "bg-white text-slate-500 border-slate-200 hover:border-blue-200 hover:text-blue-600"
+                    }`}
+                    style={
+                      propertyType === t.value
+                        ? { background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", boxShadow: "0 4px 14px rgba(37,99,235,0.28)" }
+                        : undefined
+                    }
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="h-px bg-slate-100 mb-6" />
+
+              {/* Numeric filters — each with its own small label, grouped in a clean grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 mb-1.5 ml-1">
+                    Bedrooms
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                      </svg>
+                    </span>
+                    <input
+                      type="number"
+                      placeholder="Any"
+                      className={fieldInputClass}
+                      value={bedrooms}
+                      onChange={(e) => setBedrooms(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                      <polyline points="9 22 9 12 15 12 15 22" />
-                    </svg>
-                  </span>
-
-                  <input
-                    type="number"
-                    placeholder="Beds"
-                    className={`${inputClass} pl-11`}
-                    value={bedrooms}
-                    onChange={(e) => setBedrooms(e.target.value)}
-                  />
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 mb-1.5 ml-1">
+                    Bathrooms
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h3M20 12a2 2 0 002-2V6a2 2 0 00-2-2h-3M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6" />
+                      </svg>
+                    </span>
+                    <input
+                      type="number"
+                      placeholder="Any"
+                      className={fieldInputClass}
+                      value={bathrooms}
+                      onChange={(e) => setBathrooms(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M4 12h16M4 12a2 2 0 01-2-2V6a2 2 0 012-2h3M20 12a2 2 0 002-2V6a2 2 0 00-2-2h-3M4 12v6a2 2 0 002 2h12a2 2 0 002-2v-6" />
-                    </svg>
-                  </span>
-
-                  <input
-                    type="number"
-                    placeholder="Baths"
-                    className={`${inputClass} pl-11`}
-                    value={bathrooms}
-                    onChange={(e) => setBathrooms(e.target.value)}
-                  />
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 mb-1.5 ml-1">
+                    Min Price
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      className={fieldInputClass}
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">
-                    ₹
-                  </span>
-
-                  <input
-                    type="number"
-                    placeholder="Min Price"
-                    className={`${inputClass} pl-9`}
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                  />
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 mb-1.5 ml-1">
+                    Max Price
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      placeholder="Any"
+                      className={fieldInputClass}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-semibold">
-                    ₹
-                  </span>
-
-                  <input
-                    type="number"
-                    placeholder="Max Price"
-                    className={`${inputClass} pl-9`}
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                  />
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="number"
-                    placeholder="Min Area (sqft)"
-                    className={inputClass}
-                    value={minArea}
-                    onChange={(e) => setMinArea(e.target.value)}
-                  />
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 mb-1.5 ml-1">
+                    Min Area (sqft)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                      </svg>
+                    </span>
+                    <input
+                      type="number"
+                      placeholder="Any"
+                      className={fieldInputClass}
+                      value={minArea}
+                      onChange={(e) => setMinArea(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
 
+              {/* Actions */}
               <div className="flex flex-wrap items-center gap-3">
-                <select
-                  value={propertyType}
-                  onChange={(e) => setPropertyType(e.target.value)}
-                  className={`${inputClass} w-auto min-w-[180px]`}
-                >
-                  <option value="">All Property Types</option>
-                  <option value="House">House</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="Villa">Villa</option>
-                </select>
-
                 <button
                   onClick={handleSearch}
                   className="flex items-center gap-2 text-white text-sm font-semibold px-7 py-3 rounded-2xl transition-all duration-300 active:scale-95 hover:scale-[1.01]"
@@ -297,7 +382,7 @@ const PropertiesPage = () => {
                       <img
                         src={
                           p.image
-                            ? `https://real-estate-dhap.onrender.com/uploads/${p.image}`
+                            ? uploadsUrl(p.image)
                             : "https://images.unsplash.com/photo-1518791841217-8f162f1e3631?auto=format&fit=crop&w=800&q=60"
                         }
                         alt={p.title}
@@ -344,8 +429,8 @@ const PropertiesPage = () => {
                         <span className="truncate">{p.location}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 mb-6">
-                        <span className="flex items-center gap-1.5 bg-blue-50/70 text-slate-600 text-xs font-semibold px-3 py-2 rounded-xl flex-1 justify-center">
+                      <div className="flex flex-wrap items-center gap-2 mb-6">
+                        <span className="flex min-w-[30%] flex-1 items-center justify-center gap-1.5 bg-blue-50/70 text-slate-600 text-xs font-semibold px-3 py-2 rounded-xl">
                           <svg className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                             <polyline points="9 22 9 12 15 12 15 22" />
@@ -387,48 +472,7 @@ const PropertiesPage = () => {
               </div>
             )}
 
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-16">
-                <button
-                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                  disabled={page === 1}
-                  className="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M15 18l-6-6 6-6" />
-                  </svg>
-                </button>
-
-                {[...Array(totalPages)].map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`w-11 h-11 rounded-2xl text-sm font-bold transition-all duration-200 ${
-                      page === i + 1
-                        ? "text-white shadow-lg"
-                        : "bg-white border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600"
-                    }`}
-                    style={
-                      page === i + 1
-                        ? { background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", boxShadow: "0 6px 20px rgba(37,99,235,0.3)" }
-                        : undefined
-                    }
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                  disabled={page === totalPages}
-                  className="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </button>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </div>
       </div>

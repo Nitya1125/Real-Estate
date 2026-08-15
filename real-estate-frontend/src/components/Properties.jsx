@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { API_BASE, uploadsUrl } from "../config/api";
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
@@ -9,16 +10,18 @@ const Properties = () => {
     const fetchProperties = async () => {
       try {
         const res = await fetch(
-          "https://real-estate-dhap.onrender.com/api/properties"
+          `${API_BASE}/api/properties`
         );
 
         const data = await res.json();
 
-        const latestProperties = (
-          data.properties || data
-        )
-          .slice(-3)
-          .reverse();
+        const list = Array.isArray(data.properties)
+          ? data.properties
+          : Array.isArray(data)
+            ? data
+            : [];
+
+        const latestProperties = list.slice(-3).reverse();
 
         setProperties(latestProperties);
       } catch (error) {
@@ -93,7 +96,7 @@ const Properties = () => {
               <img
                 src={
                   property.image
-                    ? `https://real-estate-dhap.onrender.com/uploads/${property.image}`
+                    ? uploadsUrl(property.image)
                     : "https://placehold.co/600x400"
                 }
                 alt={property.title}
